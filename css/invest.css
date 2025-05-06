@@ -1,0 +1,136 @@
+* Payment Section */
+.payment-section {
+    position: relative;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0B0F19, #1e293b);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  
+  /* Payment Container */
+  .payment-container {
+    position: relative;
+    background: rgba(62, 12, 1, 0.95); /* slight transparent */
+    padding: 40px 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    max-width: 500px;
+    width: 100%;
+    backdrop-filter: blur(8px); /* glass effect */
+  }
+  
+  .payment-container h1, 
+  .payment-container h2 {
+    color: #ffffff;
+    margin-bottom: 20px;
+  }
+  
+  /* QR Code */
+  .qr-code img {
+    width: 220px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  }
+  
+  /* Wallet Address */
+  .wallet-address p {
+    color: #8f1809;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .wallet-address input {
+    width: 100%;
+    padding: 12px;
+    background: #1e293b;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    color: white;
+    text-align: center;
+    margin-bottom: 10px;
+    transition: border-color 0.3s;
+  }
+  
+  .wallet-address input:focus {
+    border-color: #911c08;
+    outline: none;
+  }
+  
+  .wallet-address button {
+    background: #a80904;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .wallet-address button:hover {
+    background: #7f0703;
+  }
+  
+  /* Payment Buttons */
+  .payment-buttons {
+    margin-top: 30px;
+  }
+  
+  .cancel-btn, .paid-btn {
+    background: #a10404;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    margin: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  .cancel-btn:hover {
+    background: #ef4444;
+    transform: scale(1.05);
+  }
+  
+  .paid-btn:hover {
+    background: #22c55e;
+    transform: scale(1.05);
+  }
+  
+  /* Loading Spinner (centered) */
+  .loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 4px solid #751203;
+    border-top: 4px solid transparent;
+    border-radius: 50%;
+    animation: spin 1.5s linear infinite;
+    z-index: 10;
+  }
+  
+  /* Spinner Animation */
+  @keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+    
+
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: #300801;
+  }
+  

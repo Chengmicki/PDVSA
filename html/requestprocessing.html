@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request Processing</title>
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f3f3f3;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .container {
+    text-align: center;
+    background-color: white;
+    padding: 30px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+  }
+
+  h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  p {
+    color: #666;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .hourglass {
+    width: 50px;
+    height: 50px;
+    margin: 20px auto;
+    position: relative;
+    transform-origin: center;
+    animation: flipHourglass 2s infinite;
+  }
+
+  @keyframes flipHourglass {
+    0% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(180deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .hourglass::before, .hourglass::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    transform: translateX(-50%);
+  }
+
+  .hourglass::before {
+    top: 0;
+  }
+
+  .hourglass::after {
+    bottom: 0;
+  }
+
+  .hourglass .middle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 5px;
+    height: 20px;
+    background-color: #4CAF50;
+  }
+
+  /* Responsive tweaks for smaller screens */
+  @media (max-width: 400px) {
+    h2 {
+      font-size: 20px;
+    }
+    p {
+      font-size: 14px;
+    }
+    .hourglass {
+      width: 40px;
+      height: 40px;
+    }
+    .hourglass::before, .hourglass::after {
+      width: 16px;
+      height: 16px;
+    }
+    .hourglass .middle {
+      width: 4px;
+      height: 16px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Processing Your Request...</h2>
+  <div class="hourglass">
+    <div class="middle"></div>
+  </div>
+  <p>Please wait while we process your request. This may take a few moments.</p>
+</div>
+
+<script>
+  setTimeout(function() {
+    window.location.href = "dashboard.html";
+  }, 6000);
+</script>
+
+</body>
+</html>

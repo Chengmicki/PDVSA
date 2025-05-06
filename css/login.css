@@ -1,0 +1,319 @@
+/* ======== Global Reset ======== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Body settings */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: white;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ======== Banner ======== */
+.banner {
+  background-color: red;
+  color: white;
+  text-align: center;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+/* ======== Header ======== */
+.header {
+  background-color: #300101;
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+}
+
+.navigation a {
+  color: white;
+  text-decoration: none;
+  margin: 0 15px;
+  font-size: 16px;
+  transition: color 0.3s;
+}
+
+.navigation a:hover {
+  color: red;
+}
+
+.btnlogin-popup {
+  padding: 8px 20px;
+  background: transparent;
+  border: 2px solid white;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.btnlogin-popup:hover {
+  background-color: red;
+  color: white;
+}
+
+/* Login Page Layout */
+.login-main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 20px;
+  min-height: 90vh;
+  background: url('background.jpg') no-repeat center center/cover;
+}
+
+.login-box {
+  background: #370208;
+  padding: 40px 30px;
+  border-radius: 16px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: slideFadeIn 0.6s ease;
+}
+
+.login-title {
+  color: #e68d8d;
+  font-size: 26px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.input-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: white;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 14px;
+  background: #300101;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  text-align: left;
+}
+
+.login-box label {
+  display: block;
+  text-align: left;
+  margin: 10px 0 5px;
+  color: white;
+  font-size: 14px;
+}
+
+.input-group input::placeholder {
+  text-align: left;
+  color: white;
+}
+
+.input-group input:focus + i,
+.input-group:focus-within i {
+  animation: pulse 1s infinite;
+  color: red;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.forgot-link {
+  color: white;
+  text-decoration: none;
+}
+
+.login-btn::after {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transition: transform 0.4s ease;
+}
+
+.login-btn:active::after {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.login-btn {
+  background-color: red;
+  border: none;
+  color: white;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: #c00000;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.register-link a {
+  color: white;
+  text-decoration: none;
+}
+
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-section {
+  background: url('background.jpg') no-repeat center center/cover;
+  min-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-box {
+  background-color: #300101;
+  padding: 40px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.6);
+  text-align: center;
+}
+
+.login-box h2 {
+  color: white;
+  margin-bottom: 20px;
+}
+
+.input-group {
+  background-color: #300101;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.input-group i {
+  color: red;
+  margin-right: 10px;
+}
+
+.input-group input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  outline: none;
+}
+
+.checkbox-group {
+  text-align: left;
+  margin: 10px 0;
+}
+
+.forgot-password {
+  display: block;
+  color: white;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.login-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: auto;
+  padding: 10px 25px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background-color: #c00000;
+}
+
+.register-text {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.register-text a {
+  color: white;
+  text-decoration: none;
+}
+
+/* Pulse Button Effect */
+.pulse-button {
+  animation: pulseGlow 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px 10px rgba(255, 0, 0, 0);
+  }
+}

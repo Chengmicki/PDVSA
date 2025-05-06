@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investment Dashboard</title>
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<body>
+  <header class="header">
+    <div class="logo">PDVSA</div>
+    <!-- Hamburger Menu for Mobile -->
+<!-- Hamburger Menu -->
+<div class="nav-toggle" onclick="toggleNav()">
+    <div class="line"></div>
+    <div class="line"></div>
+    <div class="line"></div>
+    <span class="menu-label">Menu</span> <!-- Added label -->
+  </div>
+  
+    <nav class="nav">
+        <ul>
+            <li><a href="legalentity.html">Legal entities</a></li>
+            <li><a href="verification.html">Verification</a></li>
+            <li><a href="news.html">News</a></li>
+            <li><a href="invest.html">Deposit</a></li>
+            <li><a href="support">Support</a></li>
+            <li><a href="withdraw.html">Withdraw</a></li>
+            <li><a href="transactions.html">Transactions</a></li>
+            <li><a href="homepage.html">Logout</a></li>
+          </ul>
+          
+    </nav>
+   
+  </header>
+
+  <main class="main">
+    <div class="welcome">
+      <h2>Welcome back</h2>
+    </div>
+   
+    <section class="summary-cards">
+        <div class="card card-blue">
+          <div class="icon">💼</div>
+          <div class="label">Current balance</div>
+          <div class="value" id="current-balance">$0.00</div>
+        </div>
+      
+        <div class="card">
+          <div class="icon">💰</div>
+          <div class="label">Total AUM</div>
+          <div class="value" id="total-aum">$0M</div>
+          <div class="trend up">⬈ 10% vs last month</div>
+        </div>
+      
+        <div class="card">
+          <div class="icon">👥</div>
+          <div class="label">Active investors</div>
+          <div class="value" id="active-investors">0</div>
+          <div class="trend up">⬈ 10% vs last month</div>
+        </div>
+      
+        <div class="card">
+          <div class="icon">📊</div>
+          <div class="label">YTD Return</div>
+          <div class="value" id="ytd-return">0%</div>
+          <div class="trend down">⬊ 2% vs benchmark</div>
+        </div>
+      </section>
+      
+    <section class="charts">
+      <div class="chart-card">
+        <h3>Asset breakdown</h3>
+        <canvas id="assetChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Return</h3>
+          <div>
+            <button class="btn-outline small">12 Months</button>
+            <button class="btn-outline small">Yearly</button>
+          </div>
+        </div>
+        <canvas id="returnChart"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const assetChart = new Chart(document.getElementById('assetChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Equities', 'Bonds', 'Cash'],
+        datasets: [{
+          label: 'Assets',
+          data: [60, 25, 15],
+          backgroundColor: ['#2563eb', '#10b981', '#facc15'],
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: '70%'
+      }
+    });
+
+    const returnChart = new Chart(document.getElementById('returnChart'), {
+      type: 'line',
+      data: {
+        labels: Array.from({length: 12}, (_, i) => `Month ${i+1}`),
+        datasets: [{
+          label: 'Return',
+          data: [200000, 220000, 240000, 260000, 280000, 300000, 320000, 340000, 360000, 380000, 400000, 420000],
+          fill: true,
+          borderColor: '#2563eb',
+          backgroundColor: 'rgba(37,99,235,0.1)',
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } }
+      }
+    });
+  </script>
+
+<script>
+  function animateValue(id, start, end, duration) {
+    const obj = document.getElementById(id);
+    const range = end - start;
+    const stepTime = Math.abs(Math.floor(duration / range));
+    let current = start;
+    const increment = end > start ? 1 : -1;
+    const timer = setInterval(function() {
+      current += increment;
+      obj.textContent = current.toLocaleString();
+      if (current === end) {
+        clearInterval(timer);
+      }
+    }, stepTime);
+  }
+
+  window.onload = function() {
+    animateValue("current-balance", 0, 40206, 1500);
+    animateValue("total-aum", 0, 778000000, 1500);
+    animateValue("active-investors", 0, 15300, 1500);
+  };
+</script>
+
+<script>
+    function animateValue(id, start, end, duration, formatFn) {
+      const obj = document.getElementById(id);
+      const range = end - start;
+      const steps = 60; // total steps for smoothness
+      const increment = range / steps;
+      const stepTime = duration / steps;
+      let current = start;
+      let stepCount = 0;
+  
+      const timer = setInterval(function() {
+        current += increment;
+        stepCount++;
+        if (stepCount >= steps) {
+          current = end; // snap to end
+        }
+        obj.textContent = formatFn(current);
+        if (stepCount >= steps) {
+          clearInterval(timer);
+        }
+      }, stepTime);
+    }
+  
+    window.onload = function() {
+      // Current balance ($40,206.20)
+      animateValue("current-balance", 0, 40206.20, 1500, function(val) {
+        return `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      });
+  
+      // Total AUM ($778M)
+      animateValue("total-aum", 0, 778, 1500, function(val) {
+        return `$${Math.round(val)}M`;
+      });
+  
+      // Active investors (15,300)
+      animateValue("active-investors", 0, 15300, 1500, function(val) {
+        return Math.round(val).toLocaleString();
+      });
+  
+      // YTD Return (18.5%)
+      animateValue("ytd-return", 0, 18.5, 1500, function(val) {
+        return `${val.toFixed(1)}%`;
+      });
+    };
+  </script>
+  
+  <script>
+    // Toggle mobile navigation
+    function toggleNav() {
+      const nav = document.querySelector('.nav ul');
+      nav.classList.toggle('active');
+    }
+  </script>
+  
+
+</body>
+</html>

@@ -1,0 +1,127 @@
+/* Reset and base */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #ffff; /* Deep dark red background */
+    color: #fff;
+  }
+  
+  /* Navbar */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #660000; /* Dark red navbar */
+    padding: 10px 20px;
+  }
+  
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .hamburger {
+    cursor: pointer;
+    font-size: 24px;
+    color: #fff;
+  }
+  
+  .mobile-menu {
+    display: none;
+    flex-direction: column;
+    background-color: #660000;
+  }
+  
+  .mobile-menu a {
+    padding: 10px;
+    border-top: 1px solid #990000;
+  }
+  
+  /* Header */
+  header {
+    text-align: center;
+    padding: 30px 20px 10px;
+  }
+  
+  header h1 {
+    color: #0e0101; /* Light red headline */
+  }
+  
+  .timestamp {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #0d0101;
+  }
+  
+  /* Container & Cards */
+  .container {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  .news-card {
+    background-color: #330000; /* Deep maroon card */
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+    border: 1px solid #990000;
+  }
+  
+  .news-card h2 {
+    background-color: #990000; /* Bold red title bar */
+    padding: 10px 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+    color: #fff;
+  }
+  
+  /* TradingView widget adjustment */
+  .tradingview-widget-container {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.2);
+    margin-top: 10px;
+  }
+  
+  /* Forex news list */
+  .news-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .news-list li {
+    margin-bottom: 10px;
+  }
+  
+  .news-list a {
+    color: #ff9999;
+    text-decoration: none;
+  }
+  
+  .news-list a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 15px;
+    background-color: #330000;
+    border-top: 1px solid #990000;
+    margin-top: 40px;
+    font-size: 0.9em;
+    color: #aaa;
+  }
+  
+  /* Responsive tweaks */
+  @media (max-width: 600px) {
+    .news-card h2 {
+      font-size: 1.1em;
+    }
+  }
+  
+    

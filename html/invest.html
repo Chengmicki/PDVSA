@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDVSA Oil & Gas</title>
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="../css/invest.css">
+
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+<section class="payment-section">
+  <div class="payment-container">
+    <h1>Investment Deposit</h1>
+    <h2>Total </h2>
+
+    <div class="qr-code">
+      <img src="images/qrcode.png" alt="Scan to Pay">
+    </div>
+
+    <div class="wallet-address">
+      <p>BTC Wallet Address:</p>
+      <input type="text" readonly value="bc1q03ggdrww7essye4h58xyf09yeamsagqwhpdxfw" id="walletInput">
+      <button onclick="copyWallet()">Copy Address</button>
+    </div>
+
+    <div class="payment-buttons">
+      <button class="cancel-btn" onclick="window.location.href='homepage.html'">Cancel</button>
+      <button class="paid-btn" onclick="window.location.href='thankuforpay.html'">Already Paid</button>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner"></div>
+
+  </div>
+</section>
+
+<!-- JavaScript function -->
+<script>
+function copyWallet() {
+  var copyText = document.getElementById("walletInput");
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); // For mobile devices
+  document.execCommand("copy");
+  alert("Wallet address copied!");
+}
+</script>
+
+</body>
+</html>

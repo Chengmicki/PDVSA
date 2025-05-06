@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Latest Oil, Gas & Currency News</title>
+<link rel="stylesheet" href="../css/news.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container {
+  flex: 1;
+}
+
+footer {
+  text-align: center;
+  padding: 15px;
+  background-color: #330000;
+  border-top: 1px solid #990000;
+  font-size: 0.9em;
+  color: #aaa;
+}
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+<nav>
+  <div class="nav-left">
+    <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i> Back</a>
+  </div>
+  <div class="nav-right">
+    <a href="invest.html"><i class="fas fa-dollar-sign"></i> Invest Now</a>
+  </div>
+  <div class="hamburger" id="hamburger">☰</div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i> Back</a>
+  <a href="invest.html"><i class="fas fa-dollar-sign"></i> Invest Now</a>
+</div>
+
+<header>
+  <h1>Latest Oil, Gas & Currency News</h1>
+  <p class="timestamp">Last updated: <span class="current-time"></span></p>
+</header>
+
+<div class="container">
+
+  <!-- Oil & Gas Prices -->
+  <div class="news-card">
+    <h2>🛢️ Oil & Gas Prices</h2>
+    <div class="tradingview-widget-container">
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+      {
+        "symbols": [
+          { "proName": "TVC:USOIL", "title": "WTI Crude Oil" },
+          { "proName": "TVC:UKOIL", "title": "Brent Crude Oil" },
+          { "proName": "NYMEX:NG1!", "title": "Natural Gas" }
+        ],
+        "colorTheme": "dark",
+        "isTransparent": false,
+        "displayMode": "regular",
+        "locale": "en"
+      }
+      </script>
+    </div>
+  </div>
+
+  <!-- Currency Rates -->
+  <div class="news-card">
+    <h2>💱 Currency Rates (USD)</h2>
+    <div class="tradingview-widget-container">
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+      {
+        "symbols": [
+          { "proName": "FX_IDC:USDEUR", "title": "USD / EUR" },
+          { "proName": "FX_IDC:USDJPY", "title": "USD / JPY" },
+          { "proName": "FX_IDC:USDCAD", "title": "USD / CAD" }
+        ],
+        "colorTheme": "dark",
+        "isTransparent": false,
+        "displayMode": "regular",
+        "locale": "en"
+      }
+      </script>
+    </div>
+  </div>
+
+  <!-- Latest Forex News -->
+  <div class="news-card">
+    <h2>📰 Latest Forex News</h2>
+    <ul id="forex-news" class="news-list"></ul>
+  </div>
+
+</div>
+
+<footer>
+  <p>&copy; 2025 PDVSA Oil. All rights reserved.</p>
+</footer>
+
+</div> <!-- End wrapper -->
+
+<script>
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  hamburger.addEventListener('click', () => {
+    mobileMenu.style.display = mobileMenu.style.display === 'flex' ? 'none' : 'flex';
+  });
+
+  function updateTimestamps() {
+    const span = document.querySelector('.current-time');
+    const now = new Date();
+    const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    const timeString = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], options);
+    span.textContent = timeString;
+  }
+
+  updateTimestamps();
+  setInterval(updateTimestamps, 60000);
+
+  function loadForexNews() {
+    fetch('https://api.rss2json.com/v1/api.json?rss_url=https://www.fxstreet.com/rss/news')
+      .then(response => response.json())
+      .then(data => {
+        const list = document.getElementById('forex-news');
+        list.innerHTML = '';
+        data.items.slice(0, 5).forEach(item => {
+          const li = document.createElement('li');
+          li.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a>`;
+          list.appendChild(li);
+        });
+      });
+  }
+
+  loadForexNews();
+  setInterval(loadForexNews, 60000);
+</script>
+
+</body>
+</html>

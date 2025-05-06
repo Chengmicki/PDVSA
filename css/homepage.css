@@ -1,0 +1,387 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+.hero{
+    background: #300101;
+    min-height: 100vh;
+    width: 100%;
+    color: #fff;
+    position: relative;
+}
+nav
+{
+    display: flex;
+    align-items: center;
+    padding: 20px 8%;
+}
+nav .menu-img{
+    width: 25px;
+    margin-right: 20px;
+    cursor: pointer;
+}
+nav .logo{
+    width: 160px;
+    cursor: pointer;
+}
+nav ul{
+    flex: 1;
+    text-align: right;
+}
+nav ul li{
+    display: inline-block;
+    list-style: none;
+    margin: 0 20px;
+}
+nav ul li a{
+    text-decoration: none;
+    color: #fff;
+}
+button{
+    background: #efefef;
+    height: 30px;
+    width: 60px;
+    border-radius: 20px;
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+    transition: background 0.5s;
+}
+button span{
+    display: block;
+    background: #999;
+    height: 26px;
+    width: 26px;
+    border-radius: 50%;
+    margin-left: 2px;
+    transition: background 0.5s, margin-left 0.5s;
+}
+.lamp-container{
+    position: absolute;
+    top: -20px;
+    left: 22%;
+    width: 200px;
+}
+.lamp{
+    width: 100%;
+}
+.light{
+    position: absolute;
+    top: 97%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 700px;
+    margin-left: -10px;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+.text-container{
+    max-width: 600px;
+    margin-top: 7%;
+    margin-left: 50%;
+}
+.text-container h1{
+    font-size: 80px;
+    font-weight: 400;
+}
+.text-container a{
+    text-decoration: none;
+    background: #fdfffe;
+    padding: 14px 40px;
+    display: inline-block;
+    color: #350202;
+    font-size: 18px;
+    margin-top: 30px;
+    border-radius: 30px;
+}
+.control{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 150px;
+}
+.control .line{
+    width: 250px;
+    height: 4px;
+    background: #fff;
+    margin: 0 20px;
+    border-radius: 2px;
+}
+.control .line span{
+    width: 50%;
+    height: 8px;
+    margin-top: -2px;
+    border-radius: 4px;
+    background: #00986f;
+    display: block;
+}
+.active{
+    background: green;
+}
+.active span{
+    background: #fff;
+    margin-left: 31px;
+}
+.on{
+    opacity: 1;
+}
+
+.logo {
+  font-family: 'Poppins', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.logo .white {
+  color: #ffffff;
+}
+
+.logo .red {
+  color: #990000; /* Deep red for brand identity */
+}
+
+
+.text-container a {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #990000; /* Deep red */
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .text-container a:hover {
+    transform: scale(0.95); /* Slight shrink */
+    background-color: #b30000; /* Slightly lighter red */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+
+
+  
+  /* === Glowing Navigation Links === */
+  nav ul li a {
+    color: white;
+    text-shadow: 0 0 4px #ffffff;
+    transition: all 0.3s ease;
+  }
+  
+  nav ul li a:hover {
+    color: #ff4d4d;
+    text-shadow: 0 0 8px #ff4d4d, 0 0 12px #ff1a1a;
+  }
+  
+  
+  .features {
+    background-color: #300101; /* dark red background */
+    color: white;
+    padding: 60px 20px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 30px;
+  }
+
+
+  .feature-box img {
+    width: 60px;       /* Shrinks the image */
+    height: 60px;      /* Ensures it stays proportional */
+    margin-bottom: 1rem;
+    object-fit: contain;
+  }
+  
+
+
+  
+  .feature-box {
+    background-color: white;
+    color: #8B0000;
+    padding: 30px;
+    border-radius: 10px;
+    width: 250px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .feature-box:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+  }
+  
+  .feature-box p {
+    font-size: 0.95rem;
+    margin-top: 10px;
+  }
+  
+  .feature-header {
+    font-size: 1.4rem;
+    font-weight: 700;
+    position: relative;
+    transition: color 0.3s ease;
+  }
+  
+  .feature-header.glow {
+    color: #ff4444;
+    text-shadow: 0 0 10px #ff4444;
+  }
+  
+
+
+
+
+
+  /* Responsive Design for Mobile */
+@media (max-width: 768px) {
+    nav {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    nav ul {
+      text-align: left;
+      margin-top: 20px;
+      width: 100%;
+    }
+  
+    nav ul li {
+      display: block;
+      margin: 10px 0;
+    }
+  
+    .text-container {
+      margin: 50px auto;
+      padding: 0 20px;
+      text-align: center;
+    }
+  
+    .text-container h1 {
+      font-size: 40px;
+    }
+  
+    .features {
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 10px;
+    }
+  
+    .feature-box {
+      width: 90%;
+      margin-bottom: 20px;
+    }
+  
+    .lamp-container {
+      display: none; /* Optional: Hide lamp on small screens */
+    }
+  
+    .control {
+      justify-content: center;
+      margin-top: 60px;
+    }
+  }
+  
+
+
+
+
+  .testimonials {
+    background-color: #300101; /* deep red */
+    color: white;
+    padding: 60px 20px;
+    text-align: center;
+  }
+  
+  .testimonials h2 {
+    font-size: 32px;
+    margin-bottom: 40px;
+    font-weight: 700;
+  }
+  
+  .testimonial-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+  }
+  
+  .testimonial {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 20px 25px;
+    border-radius: 12px;
+    max-width: 300px;
+    transition: transform 0.3s ease;
+  }
+  
+  .testimonial:hover {
+    transform: translateY(-5px);
+  }
+  
+  .testimonial p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    font-style: italic;
+  }
+  
+  .testimonial h4 {
+    font-size: 14px;
+    font-weight: 500;
+    color: #ff4c4c;
+  }
+  
+
+
+
+  .site-footer {
+    background-color:#300101;
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  
+  .footer-container {
+    max-width: 1200px;
+    margin: auto;
+  }
+  
+  .footer-logo {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .footer-logo .white {
+    color: white;
+  }
+  
+  .footer-logo .red {
+    color: #ff4d4d;
+  }
+  
+  .footer-links {
+    margin-bottom: 20px;
+  }
+  
+  .footer-links a {
+    color: white;
+    margin: 0 12px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .footer-links a:hover {
+    color: #ff4d4d;
+  }
+  
+  .footer-info p {
+    font-size: 14px;
+    opacity: 0.8;
+  }
+  
