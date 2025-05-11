@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDVSA oil</title>
+
+  <!-- Main CSS -->
+  <style>
+    /* Import Google Font */
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+
+    /* Reset & Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: #f3f4f6;
+      background: url('') no-repeat center center fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    /* KYC Container */
+    .kyc--container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .section--title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 30px;
+      text-align: center;
+      color: #1f2937;
+    }
+
+    /* Form Styles */
+    .kyc--form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .form--group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form--group label {
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #374151;
+    }
+
+    .form--group input,
+    .form--group select,
+    .form--group textarea {
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form--group input:focus,
+    .form--group select:focus,
+    .form--group textarea:focus {
+      border-color: #3b82f6;
+      outline: none;
+    }
+
+    .form--group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form--group input[type="file"] {
+      padding: 8px;
+      font-size: 0.95rem;
+    }
+
+    /* Submit Button */
+    .btn-submit {
+      background-color: #520019;
+      color: #fff;
+      border: none;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-submit:hover {
+      background-color: #e0111f;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .kyc--container {
+        padding: 25px 20px;
+      }
+
+      .section--title {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<section class="kyc--container">
+  <h3 class="section--title">KYC Verification</h3>
+  <form id="kycForm" class="kyc--form">
+
+    <div class="form--group">
+      <label for="fullName">Full Name</label>
+      <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
+    </div>
+
+    <div class="form--group">
+      <label for="dob">Date of Birth</label>
+      <input type="date" id="dob" name="dob" required>
+    </div>
+
+    <div class="form--group">
+      <label for="occupation">Occupation</label>
+      <input type="text" id="occupation" name="occupation" placeholder="e.g., Software Engineer" required>
+    </div>
+
+    <div class="form--group">
+      <label for="nationality">Nationality</label>
+      <input type="text" id="nationality" name="nationality" placeholder="Enter your country of citizenship" required>
+    </div>
+
+    <div class="form--group">
+      <label for="ssn">Social Security Number (SSN) 
+        <span style="font-weight: normal; font-size: 0.9rem; color: #888;">
+          (Only required for U.S. citizens)
+        </span>
+      </label>
+      <input type="text" id="ssn" name="ssn" placeholder="e.g., 123-45-6789">
+    </div>
+
+    <div class="form--group">
+      <label for="address">Residential Address</label>
+      <textarea id="address" name="address" placeholder="Street, City, State/Province, ZIP, Country" required></textarea>
+    </div>
+
+    <div class="form--group">
+      <label for="idType">Identity Document Type</label>
+      <select id="idType" name="idType" required>
+        <option value="">Select Document Type</option>
+        <option value="passport">Passport</option>
+        <option value="national_id">National ID</option>
+        <option value="driver_license">Driver’s License</option>
+      </select>
+    </div>
+
+    <div class="form--group">
+      <label for="idUpload">Upload Identity Document</label>
+      <input type="file" id="idUpload" name="idUpload" accept=".jpg,.jpeg,.png,.pdf" required>
+    </div>
+
+    <button type="button" class="btn-submit" onclick="window.location.href='dashboard.html'">
+      Submit for Verification
+    </button>
+  </form>
+
+  <script>
+    const nationalityInput = document.getElementById("nationality");
+    const ssnField = document.getElementById("ssn").closest(".form--group");
+
+    nationalityInput.addEventListener("input", () => {
+      const value = nationalityInput.value.toLowerCase().trim();
+      if (value === "usa" || value === "united states" || value === "united states of america") {
+        ssnField.style.display = "flex";
+      } else {
+        ssnField.style.display = "none";
+        document.getElementById("ssn").value = "";
+      }
+    });
+
+    // Hide SSN by default on load
+    window.addEventListener("DOMContentLoaded", () => {
+      ssnField.style.display = "none";
+    });
+  </script>
+</section>
+</body>
+</html>

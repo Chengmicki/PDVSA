@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PDVSA Investment Dashboard</title>
+<style>
+/* ──────────── Utility & Base ──────────── */
+* { box-sizing: border-box; }
+body { margin:0; font-family:'Segoe UI',sans-serif; background:white; color:#2c2c2c; }
+
+.container { display:flex; min-height:100vh; }
+
+/* ──────────── Sidebar ──────────── */
+.sidebar {
+  width:250px; background:#f9f9f9; border-right:1px solid #ddd;
+  padding:1.5rem; position:fixed; top:0; left:0; height:100vh; overflow-y:auto;
+  transition:transform 0.3s ease; z-index:1000;
+}
+.sidebar h2 { margin-bottom:2rem; font-size:1.3rem; }
+
+.nav-button {
+  width:100%; display:flex; align-items:center; padding:.75rem 1rem;
+  background:none; border:none; text-align:left; cursor:pointer;
+  border-radius:.5rem; transition:background .3s; margin-bottom:.5rem;
+}
+.nav-button:hover, .nav-button.active { background:#f9dcdc; color:#8B0000; }
+.nav-button span { margin-left:.75rem; }
+
+/* ──────────── Main ──────────── */
+.main {
+  flex:1; padding:2rem; margin-left:250px; transition:margin-left 0.3s ease;
+}
+.section-title { font-size:1.5rem; font-weight:bold; margin-bottom:1rem; }
+.hidden { display:none; }
+
+/* ──────────── Hamburger ──────────── */
+.hamburger {
+  display:none; position:fixed; top:15px; left:15px; z-index:1100;
+  width:30px; height:22px; flex-direction:column; justify-content:space-between;
+  cursor:pointer;
+}
+.hamburger span {
+  display:block; height:4px; background:#333; border-radius:2px;
+  transition:all 0.3s ease;
+}
+
+/* ──────────── Card Grids ──────────── */
+.card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1.5rem; margin-bottom:2rem; }
+.card {
+  background:#f0f4f8; border-radius:1rem; padding:1.25rem;
+  box-shadow:0 4px 8px rgba(0,0,0,0.05);
+}
+.card h3 { font-size:1.1rem; font-weight:600; margin-bottom:.5rem; }
+
+/* ──────────── Assets ──────────── */
+.subheading { font-weight:bold; margin-top:1rem; margin-bottom:.5rem; }
+.assets-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; }
+.asset-box {
+  background:#fff; border:1px solid #e0e0e0; border-radius:.75rem;
+  padding:1rem; box-shadow:0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* ──────────── Exchange ──────────── */
+.exchange-box {
+  background:#f3f3f3; border-radius:1rem; padding:1.5rem; box-shadow:0 4px 8px rgba(0,0,0,0.05);
+}
+.exchange-grid { display:grid; gap:1rem; }
+.exchange-grid input, .exchange-grid select {
+  width:100%; padding:.75rem; border:1px solid #ccc; border-radius:.5rem;
+}
+.exchange-button {
+  background:#8B0000; color:#fff; padding:.75rem; border:none; border-radius:.5rem;
+  cursor:pointer;
+}
+.see-all-btn {
+  display:inline-block; text-decoration:none; font-weight:600;
+  color:#8B0000; background:#f9dcdc; padding:.5rem 1rem; border-radius:.5rem;
+  transition:background .3s;
+}
+.see-all-btn:hover { background:#f1c7c7; }
+
+/* ──────────── Real Estate ──────────── */
+.property-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; }
+.property-card {
+  background:#fff; border-radius:8px; overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1); transition:transform .2s;
+}
+.property-card:hover { transform:scale(1.02); }
+.property-card img { width:100%; height:180px; object-fit:cover; }
+.property-info { padding:1rem; }
+
+.invest-button {
+  display:inline-block; margin-top:1rem; padding:.5rem 1rem;
+  background:#27ae60; color:#fff; border:none; border-radius:4px;
+  cursor:pointer; text-decoration:none; transition:background .3s;
+}
+.invest-button:hover { background:#219150; }
+
+/* ─── Headers & Stats ─── */
+.realestate-header {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:1rem 2rem; background:#2c3e50; color:white; border-radius:6px; margin-bottom:1rem;
+}
+.action-buttons { display:flex; gap:0.5rem; }
+.action-btn {
+  padding:.5rem 1rem; border:none; border-radius:6px; cursor:pointer;
+  font-weight:600; font-size:0.95rem; transition:background .3s; text-decoration: none;
+}
+.action-btn.deposit { background:#27ae60; color:white; }
+.action-btn.deposit:hover { background:#219150; }
+.action-btn.withdraw { background:#8b0000; color:white; }
+.action-btn.withdraw:hover { background:#6a0000; }
+
+.stats-summary {
+  display:flex; gap:2rem; margin:1.5rem 2rem; padding:1rem;
+  background:#f9f9f9; border:1px solid #ddd; border-radius:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.05);
+}
+.stat-box {
+  flex:1; padding:.5rem 1rem; background:white; border:1px solid #e0e0e0;
+  border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.04); text-align:center;
+}
+.stat-box .label { display:block; font-size:0.95rem; color:#666; margin-bottom:0.3rem; }
+.stat-box .value { font-size:1.4rem; font-weight:bold; color:#2c3e50; }
+.stat-box .value.profit { color:#27ae60; }
+
+/* ─── Oil Stocks ─── */
+.stock-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.stock-card h3 { margin:0 0 0.5rem; font-size:1.2rem; }
+.stock-info { margin-bottom:1rem; font-size:0.95rem; color:#444; }
+.stock-actions { display:flex; gap:0.5rem; align-items:center; }
+.stock-actions input {
+  width:60px; padding:0.4rem; border:1px solid #ccc; border-radius:0.4rem; text-align:center;
+}
+.purchase-button {
+  padding:0.5rem 0.8rem; border:none; border-radius:0.4rem;
+  background-color:#8B0000; color:white; cursor:pointer; transition:background 0.3s;
+}
+.purchase-button:hover { background-color:#6a0000; }
+
+/* ──────────── Mobile ──────────── */
+@media (max-width: 768px) {
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); }
+  .main { margin-left:0; padding:1rem; }
+  .hamburger { display:flex; }
+  #sectionTitle { display:none; }
+}
+</style>
+</head>
+<body>
+
+    <!-- Hamburger -->
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    
+    <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <h2>Investment Panel</h2>
+      <button class="nav-button active" onclick="changeSection(event,'Crypto')"><span>📈</span><span>Crypto</span></button>
+      <button class="nav-button" onclick="changeSection(event,'Real Estate')"><span>🏘️</span><span>Real Estate</span></button>
+      <button class="nav-button" onclick="changeSection(event,'Oil Stocks')"><span>🛢️</span><span>Oil Stocks</span></button>
+      <button class="nav-button" onclick="changeSection(event,'Forex')"><span>💱</span><span>Forex</span></button>
+      <button class="nav-button" onclick="window.location.href='dashboard.html'"><span>⬅</span><span>Go Back</span></button>
+
+    </div>
+    
+    <!-- Main -->
+    <div class="main">
+    <div class="section-title" id="sectionTitle">Crypto Dashboard</div>
+    <div id="main-content">
+    
+    <!-- Crypto Section -->
+    <div id="cryptoSection">
+      <div class="card-grid">
+        <div class="card">
+          <h3>Total Balance</h3>
+          <p id="totalBalance" style="font-size:1.5rem;font-weight:bold;">$0</p>
+          <p style="color:green;">Auto Calculated</p>
+          <div class="subheading">Assets</div>
+          <div class="assets-grid">
+            <div class="asset-box"><h4>Bitcoin</h4><div class="asset-amount">0.5 BTC</div><div id="btcUsd">$0</div></div>
+            <div class="asset-box"><h4>Ethereum</h4><div class="asset-amount">1 ETH</div><div id="ethUsd">$0</div></div>
+            <div class="asset-box"><h4>USDT</h4><div class="asset-amount">1000 USDT</div><div id="usdtUsd">$0</div></div>
+          </div>
+          <div style="text-align:right;margin-top:1rem;"><a href="cryptoassets.html" class="see-all-btn">See All Assets →</a></div>
+        </div>
+        <div class="card"><h3>Market Change</h3><p style="font-size:1.5rem;font-weight:bold;">+1.99%</p><p style="color:gray;">(24h)</p></div>
+      </div>
+    
+      <div class="exchange-box"><h2>Exchange Simulator</h2><div class="exchange-grid">
+        <input type="number" id="amount" placeholder="Amount to send">
+        <select id="currency"><option value="ETH">ETH</option><option value="BTC">BTC</option><option value="USDT">USDT</option></select>
+        <button class="exchange-button" onclick="simulateExchange()">Exchange</button></div><p id="exchangeResult" style="margin-top:1rem;"></p></div>
+    </div>
+    
+    <!-- Real Estate Section -->
+    <div id="realEstateSection" class="hidden">
+      <header class="realestate-header"><h1>🏠 Welcome</h1><div class="action-buttons">
+        <a href="invest.html" class="action-btn deposit">Deposit</a>
+        <a href="withdraw.html" class="action-btn withdraw">Withdraw</a>
+      </div></header>
+    
+      <div class="stats-summary">
+        <div class="stat-box"><span class="label">Balance</span><span class="value">$4,555</span></div>
+        <div class="stat-box"><span class="label">Profit/Loss</span><span class="value profit">+$3,000 USD</span></div>
+      </div>
+    
+      <div id="property-list" class="property-grid"></div>
+    </div>
+    
+    <!-- Oil Stocks Section -->
+    <div id="oilStocksSection" class="hidden">
+      <header class="realestate-header">
+        <h1>🛢️ Oil Stocks Dashboard</h1>
+        <div class="action-buttons">
+          <a href="invest.html" class="action-btn deposit">Deposit</a>
+          <a href="withdraw.html" class="action-btn withdraw">Withdraw</a>
+        </div>
+      </header>
+    
+      <div class="stats-summary">
+        <div class="stat-box">
+          <span class="label">Portfolio Balance</span>
+          <span class="value" id="oilPortfolioBalance">$0</span>
+        </div>
+      </div>
+    
+      <div class="card-grid" id="oilStocksList"></div>
+    </div>
+    
+    <!-- Placeholders -->
+    <div id="forexSection" class="hidden"><p>Forex coming soon…</p></div>
+    
+    </div></div></div>
+    
+    <script>
+    // ─── Hamburger toggle ─────────────────────────────────────────────
+    document.getElementById('hamburger').addEventListener('click',()=>{
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+    
+    // ─── Crypto Logic ─────────────────────────────────────────
+    const rates={BTC:65000,ETH:2900,USDT:1};
+    function calculateAssets(){
+      const b=0.5,e=1,u=1000;let bv=b*rates.BTC,ev=e*rates.ETH,uv=u*rates.USDT;
+      document.getElementById('btcUsd').textContent=`$${bv.toLocaleString()}`;
+      document.getElementById('ethUsd').textContent=`$${ev.toLocaleString()}`;
+      document.getElementById('usdtUsd').textContent=`$${uv.toLocaleString()}`;
+      document.getElementById('totalBalance').textContent=`$${(bv+ev+uv).toLocaleString()}`;
+    }
+    function simulateExchange(){
+      let amt=parseFloat(document.getElementById('amount').value),cur=document.getElementById('currency').value,res=document.getElementById('exchangeResult');
+      if(isNaN(amt)||amt<=0){res.textContent='Please enter a valid amount.';res.style.color='red';return;}
+      let usd=amt*(rates[cur]||0);
+      res.textContent=`You exchanged ${amt} ${cur} ≈ $${usd.toLocaleString()}`;res.style.color='green';
+    }
+    
+    // ─── Real Estate Logic ─────────────────────────────────────────
+    function getRandomPrice(min,max){return `$${(Math.floor(Math.random()*(max-min+1))+min).toLocaleString()}`;}
+    const properties = [
+  // Standard properties ($5k–$1M)
+  { image: 'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=800&q=80', name: 'Sunset Villa',        price: getRandomPrice(5000, 1000000) },
+  { image: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80', name: 'Mountain Retreat',   price: getRandomPrice(5000, 1000000) },
+  // Urban Oasis now uses Tom Fisk’s Pexels image (4203783)
+  { image: 'https://images.pexels.com/photos/4203783/pexels-photo-4203783.jpeg?auto=format&fit=crop&w=800&q=80', name: 'Urban Oasis',        price: getRandomPrice(5000, 1000000) },
+  { image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80', name: 'Lakeside Cottage',   price: getRandomPrice(5000, 1000000) },
+  { image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80', name: 'Downtown Loft',      price: getRandomPrice(5000, 1000000) },
+  { image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=800&q=80', name: 'Beachfront Bungalow', price: getRandomPrice(5000, 1000000) },
+  { image: 'https://images.unsplash.com/photo-1599423300746-b62533397364?auto=format&fit=crop&w=800&q=80', name: 'Country Estate',     price: getRandomPrice(5000, 1000000) },
+  { image: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=800&q=80', name: 'Modern Mansion',     price: getRandomPrice(5000, 1000000) },
+  { image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80', name: 'Suburban Home',      price: getRandomPrice(5000, 1000000) },
+  // Cozy Cabin now uses Curtis Adams’s Pexels image (5178034)
+  { image: 'https://images.pexels.com/photos/5178034/pexels-photo-5178034.jpeg?auto=format&fit=crop&w=800&q=80', name: 'Cozy Cabin',         price: getRandomPrice(5000, 1000000) },
+
+  // Budget-friendly properties ($5k–$20k)
+  { image: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=80',      name: 'Oakwood Bungalow',  price: getRandomPrice(5000, 20000) },
+  { image: 'https://images.unsplash.com/photo-1502673530728-f79b4cab31b1?auto=format&fit=crop&w=800&q=80',      name: 'Pinecrest Villa',   price: getRandomPrice(5000, 20000) },
+  { image: 'https://images.unsplash.com/photo-1499955085172-a104c9463ece?auto=format&fit=crop&w=800&q=80',      name: 'Cedar Cottage',     price: getRandomPrice(5000, 20000) },
+  // Willow Estate now uses Jasper Mendoza’s Pexels image (14662148)
+  { image: 'https://images.pexels.com/photos/14662148/pexels-photo-14662148.jpeg?auto=format&fit=crop&w=800&q=80', name: 'Willow Estate',     price: getRandomPrice(5000, 20000) },
+  // Redwood Retreat uses Alexander F Ungerer’s Pexels image (20600289)
+  { image: 'https://images.pexels.com/photos/20600289/pexels-photo-20600289.jpeg?auto=format&fit=crop&w=800&q=80', name: 'Redwood Retreat',   price: getRandomPrice(5000, 20000) },
+  // Birchwood House uses Curtis Adams’s Pexels image (4258275)
+  { image: 'https://images.pexels.com/photos/4258275/pexels-photo-4258275.jpeg?auto=format&fit=crop&w=800&q=80', name: 'Birchwood House',   price: getRandomPrice(5000, 20000) },
+  // Elm Villa uses Pexels photo (1974596)
+  { image: 'https://images.pexels.com/photos/1974596/pexels-photo-1974596.jpeg?auto=format&fit=crop&w=800&q=80',   name: 'Elm Villa',         price: getRandomPrice(5000, 20000) },
+  { image: 'https://herel.com/wp-content/uploads/2021/08/luxury-real-estate.jpg?auto=format&fit=crop&w=800&q=80', name: 'Aspen Place',      price: getRandomPrice(5000, 20000) },
+  { image: 'https://images.unsplash.com/photo-1501183638710-841dd1904471?auto=format&fit=crop&w=800&q=80',      name: 'Chestnut Manor',    price: getRandomPrice(5000, 20000) },
+  { image: 'https://images.unsplash.com/photo-1599423300746-b62533397364?auto=format&fit=crop&w=800&q=80',      name: 'Magnolia Loft',     price: getRandomPrice(5000, 20000) },
+];
+    function createPropertyCard(p){
+      let c=document.createElement('div');c.className='property-card';
+      let i=document.createElement('img');i.src=p.image;i.alt=p.name;
+      let inf=document.createElement('div');inf.className='property-info';
+      let h=document.createElement('h2');h.textContent=p.name;
+      let pr=document.createElement('p');pr.textContent=p.price;
+      let btn=document.createElement('a');btn.className='invest-button';btn.href='#';btn.textContent='INVEST';
+      inf.append(h,pr,btn);c.append(i,inf);return c;
+    }
+    function initRealEstate(){
+      let l=document.getElementById('property-list');l.innerHTML='';
+      properties.forEach(p=>l.appendChild(createPropertyCard(p)));
+    }
+    
+    // ─── Oil Stocks Logic ─────────────────────────────────────────
+    const oilStocks=[
+      { name:'PDVSA Alpha',price:50 },{ name:'PDVSA Beta',price:75 },
+      { name:'PDVSA Gamma',price:60 },{ name:'PDVSA Delta',price:90 },
+      { name:'PDVSA Epsilon',price:110 },{ name:'PDVSA Zeta',price:40 }
+    ];
+    let oilPortfolio=0;
+    function createStockCard(stock){
+      const card=document.createElement('div');card.className='stock-card';
+      const title=document.createElement('h3');title.textContent=stock.name;
+      const info=document.createElement('div');info.className='stock-info';info.textContent=`Price: $${stock.price} / share`;
+      const actions=document.createElement('div');actions.className='stock-actions';
+      const input=document.createElement('input');input.type='number';input.min=1;input.value=1;
+      const btn=document.createElement('button');btn.className='purchase-button';btn.textContent='Purchase';
+      btn.addEventListener('click',()=>{const qty=parseInt(input.value);
+        if(isNaN(qty)||qty<=0){alert('Enter valid quantity');return;}
+        const cost=stock.price*qty;oilPortfolio+=cost;
+        document.getElementById('oilPortfolioBalance').textContent=`$${oilPortfolio.toLocaleString()}`;
+        alert(`Purchased ${qty} shares of ${stock.name} for $${cost.toLocaleString()}`);
+      });
+      actions.append(input,btn);card.append(title,info,actions);return card;
+    }
+    function initOilStocks(){
+      const list=document.getElementById('oilStocksList');list.innerHTML='';
+      oilStocks.forEach(stock=>list.appendChild(createStockCard(stock)));
+    }
+    
+    // ─── Section Switcher ─────────────────────────────────────────
+    function changeSection(e,sec){
+      document.querySelectorAll('.nav-button').forEach(b=>b.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+      document.getElementById('sectionTitle').textContent=sec+' Dashboard';
+      ['cryptoSection','realEstateSection','oilStocksSection','forexSection'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+      if(sec==='Crypto'){document.getElementById('cryptoSection').classList.remove('hidden');}
+      else if(sec==='Real Estate'){document.getElementById('realEstateSection').classList.remove('hidden');if(!document.getElementById('property-list').hasChildNodes()){initRealEstate();}}
+      else if(sec==='Oil Stocks'){document.getElementById('oilStocksSection').classList.remove('hidden');if(!document.getElementById('oilStocksList').hasChildNodes()){initOilStocks();}}
+      else if(sec==='Forex'){document.getElementById('forexSection').classList.remove('hidden');}
+    }
+    
+    // ─── Initialize ─────────────────────────────────────────
+    window.addEventListener('DOMContentLoaded',()=>{calculateAssets();changeSection({currentTarget:document.querySelector('.nav-button.active')},'Crypto');});
+    </script>
+    
+    </body>
+    </html>
+    
