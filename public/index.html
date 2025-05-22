@@ -1,348 +1,500 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PDVSA Oil & Gas | Secure Oil Investments</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDVSA Oil & Gas</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- AOS Library CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
   <style>
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
+    /* FULL CSS INCLUDED HERE */
+    * {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #290101;
-      color: black;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 40px;
-      background: #4e0202;
-      color: white;
-      position: relative;
-    }
-
-    .logo {
-      font-size: 1.8em;
-      font-weight: bold;
-    }
-
-    .logo span {
-      color: #fff;
-    }
-
-    nav a {
-      margin-left: 20px;
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      position: relative;
-      transition: all 0.3s ease;
-    }
-
-    nav a::after {
-      content: '';
-      position: absolute;
-      width: 0%;
-      height: 2px;
-      left: 0;
-      bottom: -4px;
-      background: white;
-      transition: width 0.3s;
-    }
-
-    nav a:hover::after {
-      width: 100%;
-    }
-
-    nav a.btn {
-      background: white;
-      color: #4e0202;
-      padding: 8px 16px;
-      border-radius: 6px;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-      transition: all 0.3s ease;
-    }
-
-    nav a.btn:hover {
-      background: #ffeded;
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
-      transform: scale(1.05);
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      box-sizing: border-box;
     }
 
     .hero {
+      background: #300101;
+      min-height: 100vh;
+      width: 100%;
+      color: #fff;
       position: relative;
-      overflow: hidden;
-      color: white;
-      text-align: center;
-      padding: 120px 20px;
-      background-color: rgba(78, 2, 2, 0.7);
     }
 
-    .hero::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: url('images/pdvsa.jpg') center/cover no-repeat;
-      filter: blur(10px);
-      z-index: 0;
-      opacity: 0.8;
+    nav {
+      display: flex;
+      align-items: center;
+      padding: 20px 8%;
     }
 
-    .hero * {
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero h1 {
-      font-size: 3em;
-      margin-bottom: 20px;
-    }
-
-    .hero p {
-      margin-bottom: 40px;
-    }
-
-    .hero .btn {
-      margin-top: 60px;
-      background: white;
-      color: #4e0202;
-      padding: 12px 24px;
-      font-weight: bold;
-      border-radius: 6px;
-      text-decoration: none;
-      transition: all 0.15s ease;
-      box-shadow: 0 0 15px rgba(255,255,255,0.4);
+    nav .menu-img {
+      width: 25px;
+      margin-right: 20px;
       cursor: pointer;
     }
 
-    .hero .btn:hover {
-      background-color: #fff5f5;
-      box-shadow: 0 0 25px rgba(255,255,255,0.7);
-      transform: scale(1.08);
+    nav .logo {
+      width: 160px;
+      cursor: pointer;
     }
 
-    .hero .btn:active {
-      transform: scale(0.9);
-      box-shadow: 0 0 30px rgba(255, 255, 255, 0.9);
-      transition: transform 0.05s ease, box-shadow 0.05s ease;
+    nav ul {
+      flex: 1;
+      text-align: right;
+    }
+
+    nav ul li {
+      display: inline-block;
+      list-style: none;
+      margin: 0 20px;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: #fff;
+      text-shadow: 0 0 4px #ffffff;
+      transition: all 0.3s ease;
+    }
+
+    nav ul li a:hover {
+      color: #ff4d4d;
+      text-shadow: 0 0 8px #ff4d4d, 0 0 12px #ff1a1a;
+    }
+
+    button {
+      background: #efefef;
+      height: 30px;
+      width: 60px;
+      border-radius: 20px;
+      border: 0;
+      outline: 0;
+      cursor: pointer;
+      transition: background 0.5s;
+    }
+
+    button span {
+      display: block;
+      background: #999;
+      height: 26px;
+      width: 26px;
+      border-radius: 50%;
+      margin-left: 2px;
+      transition: background 0.5s, margin-left 0.5s;
+    }
+
+    .lamp-container {
+      position: absolute;
+      top: -20px;
+      left: 22%;
+      width: 200px;
+    }
+
+    .lamp {
+      width: 100%;
+    }
+
+    .light {
+      position: absolute;
+      top: 97%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      margin-left: -10px;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    .text-container {
+      max-width: 600px;
+      margin-top: 7%;
+      margin-left: 50%;
+    }
+
+    .text-container h1 {
+      font-size: 80px;
+      font-weight: 400;
+    }
+
+    .text-container p {
+      margin-top: 10px;
+    }
+
+    .text-container a {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #990000;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+      border-radius: 30px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      margin-top: 30px;
+    }
+
+    .text-container a:hover {
+      transform: scale(0.95);
+      background-color: #b30000;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .control {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 150px;
+    }
+
+    .control .line {
+      width: 250px;
+      height: 4px;
+      background: #fff;
+      margin: 0 20px;
+      border-radius: 2px;
+    }
+
+    .control .line span {
+      width: 50%;
+      height: 8px;
+      margin-top: -2px;
+      border-radius: 4px;
+      background: #00986f;
+      display: block;
+    }
+
+    .active {
+      background: green;
+    }
+
+    .active span {
+      background: #fff;
+      margin-left: 31px;
+    }
+
+    .on {
+      opacity: 1;
+    }
+
+    .logo {
+      font-family: 'Poppins', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .logo .white {
+      color: #ffffff;
+    }
+
+    .logo .red {
+      color: #990000;
     }
 
     .features {
+      background-color: #300101;
+      color: white;
       padding: 60px 20px;
-      text-align: center;
-      background: #4e0202 url('a4575b4c-c28d-4bbc-a81d-cc7080cd9639.png') center/cover no-repeat;
-      background-attachment: fixed;
-      background-blend-mode: overlay;
-    }
-
-    .features h2 {
-      margin-bottom: 40px;
-      color: #fff;
-    }
-
-    .feature-grid {
       display: flex;
-      justify-content: center;
+      justify-content: space-around;
       flex-wrap: wrap;
       gap: 30px;
     }
 
-    .feature {
-      background: white;
-      border-left: 6px solid #4e0202;
+    .feature-box {
+      background-color: white;
+      color: #8B0000;
+      padding: 30px;
       border-radius: 10px;
-      padding: 25px;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.15);
-      width: 280px;
-      transition: all 0.4s ease;
-    }
-
-    .feature:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 10px 30px rgba(78, 2, 2, 0.4);
-    }
-
-    .plans-preview {
+      width: 250px;
       text-align: center;
-      padding: 60px 20px;
-      background-color: #4e0202;
-      color: darkred;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .plans-preview h2 {
+    .feature-box:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .feature-box img {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 1rem;
+      object-fit: contain;
+    }
+
+    .feature-box p {
+      font-size: 0.95rem;
+      margin-top: 10px;
+    }
+
+    .feature-header {
+      font-size: 1.4rem;
+      font-weight: 700;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+
+   
+
+    .testimonials {
+      background-color: #300101;
       color: white;
+      padding: 60px 20px;
+      text-align: center;
     }
 
-    .plans {
+    .testimonials h2 {
+      font-size: 32px;
+      margin-bottom: 40px;
+      font-weight: 700;
+    }
+
+    .testimonial-container {
       display: flex;
-      justify-content: center;
-      gap: 40px;
       flex-wrap: wrap;
-      margin-top: 40px;
+      justify-content: center;
+      gap: 30px;
     }
 
-    .plan {
-      background: white;
-      border-radius: 10px;
-      padding: 25px 40px;
-      width: 260px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      text-align: left;
-      transition: all 0.3s ease;
+    .testimonial {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 20px 25px;
+      border-radius: 12px;
+      max-width: 300px;
+      transition: transform 0.3s ease;
     }
 
-    .plan:hover {
+    .testimonial:hover {
       transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     }
 
-    .plan h3 {
-      color: #4e0202;
+    .testimonial p {
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      font-style: italic;
+    }
+
+    .testimonial h4 {
+      font-size: 14px;
+      font-weight: 500;
+      color: #ff4c4c;
+    }
+
+    .site-footer {
+      background-color: #300101;
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .footer-logo {
+      font-size: 24px;
+      font-weight: bold;
       margin-bottom: 20px;
     }
 
-    .plan p {
-      color: #222;
+    .footer-links {
+      margin-bottom: 20px;
     }
 
-    .faq {
-      background: #fff;
-      padding: 60px 20px;
-      text-align: center;
-    }
-
-    .faq h2 {
-      color: #4e0202;
-      margin-bottom: 40px;
-    }
-
-    .faq-item {
-      margin-bottom: 30px;
-      max-width: 700px;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: left;
-    }
-
-    .faq-item h4 {
-      margin-bottom: 10px;
-      font-size: 1.2em;
-      color: #4e0202;
-    }
-
-    .faq-item p {
-      margin: 0;
-      line-height: 1.6;
-    }
-
-    .footer {
-      background: #4e0202;
+    .footer-links a {
       color: white;
-      padding: 20px 40px;
-      text-align: center;
+      margin: 0 12px;
+      text-decoration: none;
+      transition: color 0.3s ease;
     }
 
-    /* Mobile responsiveness */
+    .footer-links a:hover {
+      color: #ff4d4d;
+    }
+
+    .footer-info p {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
     @media (max-width: 768px) {
-      .feature-grid,
-      .plans {
+      nav {
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
       }
 
-      nav a {
+      nav ul {
+        text-align: left;
+        margin-top: 20px;
+        width: 100%;
+      }
+
+      nav ul li {
         display: block;
         margin: 10px 0;
       }
 
-      header {
-        flex-direction: column;
+      .text-container {
+        margin: 50px auto;
+        padding: 0 20px;
         text-align: center;
+      }
+
+      .text-container h1 {
+        font-size: 40px;
+      }
+
+      .features {
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 10px;
+      }
+
+      .feature-box {
+        width: 90%;
+        margin-bottom: 20px;
+      }
+
+      .lamp-container {
+        display: none;
+      }
+
+      .control {
+        justify-content: center;
+        margin-top: 60px;
       }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo"><span>PDVSA Oil & Gas</span></div>
-    <nav>
-      <a href="#features">Features</a>
-      <a href="#plans">Plans</a>
-      <a href="#faq">FAQ</a>
-      <a href="login.html" class="btn">Login</a>
-    </nav>
-  </header>
-
-  <section class="hero">
-    <h1>Secure Oil Investments</h1>
-    <p>Invest confidently in Venezuela's oil future.</p>
-    <a href="signup.html" class="btn">Start Investing</a>
-  </section>
-
-  <section id="features" class="features">
-    <h2>Why Choose PDVSA?</h2>
-    <div class="feature-grid">
-      <div class="feature">
-        <h3>Trusted Company</h3>
-        <p>Backed by Venezuela's largest oil producer.</p>
-      </div>
-      <div class="feature">
-        <h3>High Returns</h3>
-        <p>Up to 25% annual ROI on select plans.</p>
-      </div>
-      <div class="feature">
-        <h3>Secure Platform</h3>
-        <p>Industry-standard encryption and safety protocols.</p>
-      </div>
+<div class="hero">
+  <nav>
+    <img src="images/menu.png" class="menu-img">
+    <div class="logo">
+      <span class="white">PDVSA</span><span class="red">Oil</span><span class="white">&</span><span class="red">Gas</span>
     </div>
-  </section>
+    <ul>
+      <li><a href="#features">Operations</a></li>
+      <li><a href="">Investors</a></li>
+      <li><a href="">Sustainability</a></li>
+      <li><a href="#features">About us</a></li>
+    </ul>
+    <button type="button" onclick="toggleBtn()" id="btn"><span></span></button>
+  </nav>
 
-  <section id="plans" class="plans-preview">
-    <h2>Investment Plans</h2>
-    <div class="plans">
-      <div class="plan">
-        <h3>Starter</h3>
-        <p>Minimum: $100</p>
-        <p>Monthly ROI: 5%</p>
-      </div>
-      <div class="plan">
-        <h3>Premium</h3>
-        <p>Minimum: $1,000</p>
-        <p>Monthly ROI: 10%</p>
-      </div>
-      <div class="plan">
-        <h3>Elite</h3>
-        <p>Minimum: $10,000</p>
-        <p>Monthly ROI: 25%</p>
-      </div>
-    </div>
-  </section>
+  <div class="lamp-container">
+    <img src="images/lamp.png" class="lamp">
+    <img src="images/light.png" class="light" id="light">
+  </div>
 
-  <section id="faq" class="faq">
-    <h2>Frequently Asked Questions</h2>
-    <div class="faq-item">
-      <h4>Is PDVSA a legitimate company?</h4>
-      <p>Yes, PDVSA is Venezuela’s national oil company with decades of proven operations.</p>
-    </div>
-    <div class="faq-item">
-      <h4>How do I start investing?</h4>
-      <p>Simply sign up, choose a plan, and fund your account to begin.</p>
-    </div>
-    <div class="faq-item">
-      <h4>Is my investment secure?</h4>
-      <p>We use state-of-the-art security measures to protect all transactions and user data.</p>
-    </div>
-  </section>
+  <div class="text-container">
+    <h1>PDVSA Oil</h1>
+    <p>Building the Future of Energy with Confidence and Integrity</p>
+    <a href="login.html">Invest Now</a>
+  </div>
+</div>
 
-  <footer class="footer">
-    <p>© 2025 PDVSA Oil & Gas. All rights reserved.</p>
-  </footer>
+<section id="features" class="features">
+  <div class="feature-box">
+    <img src="images/exploration.png" alt="Exploration">
+    <h3 class="feature-header">Exploration</h3>
+    <p>Innovative drilling and global partnerships fuel our search for new resources.</p>
+  </div>
+  <div class="feature-box">
+    <img src="images/production.png" alt="Production">
+    <h3 class="feature-header">Production</h3>
+    <p>Efficient extraction methods maximize output and minimize environmental impact.</p>
+  </div>
+  <div class="feature-box">
+    <img src="images/refining.png" alt="Refining">
+    <h3 class="feature-header">Refining</h3>
+    <p>Cutting-edge technology delivers refined energy products worldwide.</p>
+  </div>
+  <div class="feature-box">
+    <img src="images/investment.png" alt="Investment">
+    <h3 class="feature-header">Investment</h3>
+    <p>Secure your stake in a growing, energy-driven future with PDVSA.</p>
+  </div>
+</section>
+
+<section class="testimonials">
+  <h2>What Our Partners Say</h2>
+  <div class="testimonial-container">
+    <div class="testimonial" data-aos="fade-up" data-aos-delay="100">
+      <p>"PDVSA has been a cornerstone of our energy investment strategy. Their innovation and transparency are unmatched."</p>
+      <h4>– Maria Alvarez, Global Energy Fund</h4>
+    </div>
+    <div class="testimonial" data-aos="fade-up" data-aos-delay="200">
+      <p>"Working with PDVSA has empowered our operations and helped us scale efficiently across Latin America."</p>
+      <h4>– James Carter, PetroLink CEO</h4>
+    </div>
+    <div class="testimonial" data-aos="fade-up" data-aos-delay="300">
+      <p>"We trust PDVSA for their deep industry knowledge and forward-looking energy solutions."</p>
+      <h4>– Aisha Bello, Zenith Oil Group</h4>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-logo">
+      <span class="white">PDVSA</span><span class="red">Oil</span><span class="white">&</span><span class="red">Gas</span>
+    </div>
+    <div class="footer-links">
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Invest</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-info">
+      <p>© 2025 PDVSA Oil & Gas. All Rights Reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  var btn = document.getElementById("btn");
+  var light = document.getElementById("light");
+
+  function toggleBtn() {
+    btn.classList.toggle("active");
+    light.classList.toggle("on");
+  }
+
+  const headers = document.querySelectorAll('.feature-header');
+  function animateHeadersOnScroll() {
+    const triggerBottom = window.innerHeight * 0.85;
+    headers.forEach(header => {
+      const top = header.getBoundingClientRect().top;
+      if (top < triggerBottom) {
+        header.classList.add('glow');
+      }
+    });
+  }
+  window.addEventListener('scroll', animateHeadersOnScroll);
+  window.addEventListener('load', animateHeadersOnScroll);
+</script>
+
+<!-- AOS Library JS -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 1000,
+    once: true
+  });
+</script>
 
 </body>
 </html>

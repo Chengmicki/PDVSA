@@ -189,9 +189,9 @@ body { margin:0; font-family:'Segoe UI',sans-serif; background:white; color:#2c2
           <p style="color:green;">Auto Calculated</p>
           <div class="subheading">Assets</div>
           <div class="assets-grid">
-            <div class="asset-box"><h4>Bitcoin</h4><div class="asset-amount">0.5 BTC</div><div id="btcUsd">$0</div></div>
-            <div class="asset-box"><h4>Ethereum</h4><div class="asset-amount">1 ETH</div><div id="ethUsd">$0</div></div>
-            <div class="asset-box"><h4>USDT</h4><div class="asset-amount">1000 USDT</div><div id="usdtUsd">$0</div></div>
+            <div class="asset-box"><h4>Bitcoin</h4><div class="asset-amount">0 BTC</div><div id="btcUsd">$0</div></div>
+            <div class="asset-box"><h4>Ethereum</h4><div class="asset-amount">0 ETH</div><div id="ethUsd">$0</div></div>
+            <div class="asset-box"><h4>USDT</h4><div class="asset-amount">0 USDT</div><div id="usdtUsd">$0</div></div>
           </div>
           <div style="text-align:right;margin-top:1rem;"><a href="cryptoassets.html" class="see-all-btn">See All Assets →</a></div>
         </div>
@@ -243,29 +243,152 @@ body { margin:0; font-family:'Segoe UI',sans-serif; background:white; color:#2c2
     <div id="forexSection" class="hidden"><p>Forex coming soon…</p></div>
     
     </div></div></div>
-    
     <script>
-    // ─── Hamburger toggle ─────────────────────────────────────────────
-    document.getElementById('hamburger').addEventListener('click',()=>{
-      document.getElementById('sidebar').classList.toggle('open');
-    });
-    
-    // ─── Crypto Logic ─────────────────────────────────────────
-    const rates={BTC:65000,ETH:2900,USDT:1};
-    function calculateAssets(){
-      const b=0.5,e=1,u=1000;let bv=b*rates.BTC,ev=e*rates.ETH,uv=u*rates.USDT;
-      document.getElementById('btcUsd').textContent=`$${bv.toLocaleString()}`;
-      document.getElementById('ethUsd').textContent=`$${ev.toLocaleString()}`;
-      document.getElementById('usdtUsd').textContent=`$${uv.toLocaleString()}`;
-      document.getElementById('totalBalance').textContent=`$${(bv+ev+uv).toLocaleString()}`;
+  // ─── Hamburger toggle ─────────────────────────────────────────────
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+  });
+
+  // ─── Map your symbols to CoinGecko IDs ───────────────────────────
+  const symbolToId = {
+    BTC:  'bitcoin',
+    ETH:  'ethereum',
+    USDT: 'tether',
+    XRP:  'ripple',
+    SOL:  'solana',
+    DOGE: 'dogecoin',
+    LTC:  'litecoin'
+  };
+
+  let exchangeRates = {};
+
+  // ─── 1) Load live crypto prices for ALL symbols ────────────────────
+  async function fetchLivePrices() {
+    const ids = Object.values(symbolToId).join(',');
+    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`;
+
+    try {
+      const res  = await fetch(url);
+      const data = await res.json();
+      // Build rates map
+      exchangeRates = {};
+      for (let sym in symbolToId) {
+        const id = symbolToId[sym];
+        exchangeRates[sym] = data[id]?.usd || 0;
+      }
+      // Once we have rates, fetch balances & update UI
+      updateDashboard();
+    } catch (err) {
+      console.error('Error fetching live prices:', err);
     }
-    function simulateExchange(){
-      let amt=parseFloat(document.getElementById('amount').value),cur=document.getElementById('currency').value,res=document.getElementById('exchangeResult');
-      if(isNaN(amt)||amt<=0){res.textContent='Please enter a valid amount.';res.style.color='red';return;}
-      let usd=amt*(rates[cur]||0);
-      res.textContent=`You exchanged ${amt} ${cur} ≈ $${usd.toLocaleString()}`;res.style.color='green';
+  }
+
+  // ─── 2) Fetch wallet balances and recalc everything ────────────────
+  async function updateDashboard() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please log in first');
+      return;
     }
-    
+
+    try {
+      const res = await fetch('/api/wallet/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed wallet fetch');
+      const balances = await res.json();
+
+      // parse all your balances
+      const btcAmt  = parseFloat(balances.BTC  || 0);
+      const ethAmt  = parseFloat(balances.ETH  || 0);
+      const usdtAmt = parseFloat(balances.USDT|| 0);
+      const xrpAmt  = parseFloat(balances.XRP || 0);
+      const solAmt  = parseFloat(balances.SOL || 0);
+      const dogeAmt = parseFloat(balances.DOGE|| 0);
+      const ltcAmt  = parseFloat(balances.LTC || 0);
+
+      // compute USD values using your full rate map
+      const btcUsd  = btcAmt  * exchangeRates.BTC;
+      const ethUsd  = ethAmt  * exchangeRates.ETH;
+      const usdtUsd = usdtAmt * exchangeRates.USDT;
+      const xrpUsd  = xrpAmt  * exchangeRates.XRP;
+      const solUsd  = solAmt  * exchangeRates.SOL;
+      const dogeUsd = dogeAmt * exchangeRates.DOGE;
+      const ltcUsd  = ltcAmt  * exchangeRates.LTC;
+
+      // grand total
+      const total = btcUsd + ethUsd + usdtUsd + xrpUsd + solUsd + dogeUsd + ltcUsd;
+
+      // update your 3 main asset boxes
+      document.querySelector('.asset-box:nth-child(1) .asset-amount')
+              .textContent = `${btcAmt} BTC`;
+      document.querySelector('.asset-box:nth-child(2) .asset-amount')
+              .textContent = `${ethAmt} ETH`;
+      document.querySelector('.asset-box:nth-child(3) .asset-amount')
+              .textContent = `${usdtAmt} USDT`;
+
+      // update their USD values
+      document.getElementById('btcUsd').textContent   = `$${btcUsd.toLocaleString()}`;
+      document.getElementById('ethUsd').textContent   = `$${ethUsd.toLocaleString()}`;
+      document.getElementById('usdtUsd').textContent  = `$${usdtUsd.toLocaleString()}`;
+
+      // update the grand total
+      document.getElementById('totalBalance').textContent =
+        `$${total.toLocaleString()}`;
+    } catch (err) {
+      console.error(err);
+      alert('Could not load balances. Try logging in again.');
+    }
+  }
+
+  // ─── Exchange simulator ────────────────────────────────────────────
+  function simulateExchange() {
+    const amt = parseFloat(document.getElementById('amount').value);
+    const cur = document.getElementById('currency').value;
+    const res = document.getElementById('exchangeResult');
+    if (isNaN(amt) || amt <= 0) {
+      res.textContent = 'Please enter a valid amount.';
+      res.style.color   = 'red';
+      return;
+    }
+    const usd = amt * (exchangeRates[cur] || 0);
+    res.textContent  = `You exchanged ${amt} ${cur} ≈ $${usd.toLocaleString()}`;
+    res.style.color  = 'green';
+  }
+
+  // ─── Section toggler ───────────────────────────────────────────────
+  function changeSection(e, sec) {
+    document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
+    e.currentTarget.classList.add('active');
+    document.getElementById('sectionTitle').textContent = sec + ' Dashboard';
+    ['cryptoSection','realEstateSection','oilStocksSection','forexSection']
+      .forEach(id => document.getElementById(id).classList.add('hidden'));
+
+    if (sec === 'Crypto')              document.getElementById('cryptoSection').classList.remove('hidden');
+    else if (sec === 'Real Estate')    initRealEstate(), document.getElementById('realEstateSection').classList.remove('hidden');
+    else if (sec === 'Oil Stocks')     initOilStocks(),    document.getElementById('oilStocksSection').classList.remove('hidden');
+    else if (sec === 'Forex')          document.getElementById('forexSection').classList.remove('hidden');
+  }
+  document.querySelectorAll('.nav-button').forEach(btn =>
+  btn.addEventListener('click', e => {
+    // Grab just the *text* part from the second <span> inside the button
+    const sectionName = btn.querySelectorAll('span')[1].textContent.trim();
+    changeSection(e, sectionName);
+  })
+);
+
+
+  // ─── Initialize on load ───────────────────────────────────────────
+  window.addEventListener('DOMContentLoaded', () => {
+    fetchLivePrices();    // loads all rates, then updates balances
+    // optionally call changeSection to show Crypto:
+    changeSection(
+      { currentTarget: document.querySelector('.nav-button.active') },
+      'Crypto'
+    );
+  });
+
+
     // ─── Real Estate Logic ─────────────────────────────────────────
     function getRandomPrice(min,max){return `$${(Math.floor(Math.random()*(max-min+1))+min).toLocaleString()}`;}
     const properties = [
@@ -299,6 +422,7 @@ body { margin:0; font-family:'Segoe UI',sans-serif; background:white; color:#2c2
   { image: 'https://images.unsplash.com/photo-1501183638710-841dd1904471?auto=format&fit=crop&w=800&q=80',      name: 'Chestnut Manor',    price: getRandomPrice(5000, 20000) },
   { image: 'https://images.unsplash.com/photo-1599423300746-b62533397364?auto=format&fit=crop&w=800&q=80',      name: 'Magnolia Loft',     price: getRandomPrice(5000, 20000) },
 ];
+
     function createPropertyCard(p){
       let c=document.createElement('div');c.className='property-card';
       let i=document.createElement('img');i.src=p.image;i.alt=p.name;
@@ -353,7 +477,14 @@ body { margin:0; font-family:'Segoe UI',sans-serif; background:white; color:#2c2
     }
     
     // ─── Initialize ─────────────────────────────────────────
-    window.addEventListener('DOMContentLoaded',()=>{calculateAssets();changeSection({currentTarget:document.querySelector('.nav-button.active')},'Crypto');});
+   window.addEventListener('DOMContentLoaded', ()=> {
+  // NO calculateAssets() call here
+  changeSection(
+    { currentTarget: document.querySelector('.nav-button.active') },
+    'Crypto'
+  );
+});
+
     </script>
     
     </body>

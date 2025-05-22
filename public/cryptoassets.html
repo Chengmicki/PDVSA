@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Crypto Wallet Dashboard</title>
   <style>
     * {
@@ -166,7 +166,6 @@
     <button onclick="window.location.href='investments.html'">Back</button>
   </div>
   
-
   <div class="header">
     <h1>Total Balance</h1>
     <div class="balance" id="totalBalance">$0.00</div>
@@ -176,9 +175,9 @@
 
   <div class="converter">
     <h2>Convert USD Cash to Crypto</h2>
-    <label for="amount">USD Amount</label>
+    <label for="usdAmount">USD Amount</label>
     <input type="number" id="usdAmount" placeholder="Enter USD amount" />
-    <label for="crypto">Select Crypto</label>
+    <label for="cryptoSelect">Select Crypto</label>
     <select id="cryptoSelect">
       <option value="BTC">Bitcoin</option>
       <option value="ETH">Ethereum</option>
@@ -197,19 +196,103 @@
   </div>
 
   <script>
+    // Coins info with logos and initial zero balances & prices
     const coins = {
-      BTC: { name: "Bitcoin", logo: "https://images.seeklogo.com/logo-png/21/1/bitcoin-logo-png_seeklogo-214721.png", usd: 30000, amount: 0 },
-      ETH: { name: "Ethereum", logo: "https://images.seeklogo.com/logo-png/40/1/ethereum-logo-png_seeklogo-407463.png", usd: 2000, amount: 0 },
-      XRP: { name: "Ripple", logo: "https://images.seeklogo.com/logo-png/45/1/xrp-xrp-logo-png_seeklogo-452462.png", usd: 0.5, amount: 0 },
-      USDT: { name: "Tether", logo: "https://images.seeklogo.com/logo-png/32/1/tether-usdt-logo-png_seeklogo-323175.png", usd: 1, amount: 0 },
-      DOGE: { name: "Dogecoin", logo: "https://images.seeklogo.com/logo-png/31/1/dogecoin-doge-logo-png_seeklogo-319943.png", usd: 0.08, amount: 0 },
-      LTC: { name: "Litecoin", logo: "https://images.seeklogo.com/logo-png/45/1/litecoin-ltc-logo-png_seeklogo-452467.png", usd: 90, amount: 0 },
-      SOL: { name: "Solana", logo: "https://images.seeklogo.com/logo-png/42/1/solana-sol-logo-png_seeklogo-423095.png", usd: 120, amount: 0 },
-      CASH: { name: "USD Cash", logo: "https://cdn-icons-png.flaticon.com/512/2331/2331885.png", usd: 1, amount: 5000 }
+      BTC: { name: "Bitcoin", logo: "https://images.seeklogo.com/logo-png/21/1/bitcoin-logo-png_seeklogo-214721.png", usd: 0, amount: 0 },
+      ETH: { name: "Ethereum", logo: "https://images.seeklogo.com/logo-png/40/1/ethereum-logo-png_seeklogo-407463.png", usd: 0, amount: 0 },
+      XRP: { name: "Ripple", logo: "https://images.seeklogo.com/logo-png/45/1/xrp-xrp-logo-png_seeklogo-452462.png", usd: 0, amount: 0 },
+      USDT: { name: "Tether", logo: "https://images.seeklogo.com/logo-png/32/1/tether-usdt-logo-png_seeklogo-323175.png", usd: 0, amount: 0 },
+      DOGE: { name: "Dogecoin", logo: "https://images.seeklogo.com/logo-png/31/1/dogecoin-doge-logo-png_seeklogo-319943.png", usd: 0, amount: 0 },
+      LTC: { name: "Litecoin", logo: "https://images.seeklogo.com/logo-png/45/1/litecoin-ltc-logo-png_seeklogo-452467.png", usd: 0, amount: 0 },
+      SOL: { name: "Solana", logo: "https://images.seeklogo.com/logo-png/42/1/solana-sol-logo-png_seeklogo-423095.png", usd: 0, amount: 0 },
+      CASH: { name: "USD Cash", logo: "https://cdn-icons-png.flaticon.com/512/2331/2331885.png", usd: 1, amount: 0 }
     };
 
+    // Transaction history array
     const transactionHistory = [];
 
+    // Fetch wallet balances from backend API
+    async function loadWalletBalances() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please log in first.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/wallet/me', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        if (!res.ok) throw new Error('Failed to load wallet balances');
+        const data = await res.json();
+
+        // Update coin amounts from backend data
+        Object.keys(data).forEach(coin => {
+          if (coins[coin]) {
+            coins[coin].amount = data[coin];
+          }
+        });
+
+        // After updating amounts, fetch latest prices
+        await fetchCryptoPrices();
+
+        // Render wallets with fresh data
+        renderWallets();
+      } catch (err) {
+        console.error(err);
+        alert('Error loading wallet balances');
+      }
+    }
+
+    // Fetch real-time crypto prices from CoinGecko API
+    async function fetchCryptoPrices() {
+      // CoinGecko IDs for coins we support
+      const coinGeckoIDs = {
+        BTC: "bitcoin",
+        ETH: "ethereum",
+        XRP: "ripple",
+        USDT: "tether",
+        DOGE: "dogecoin",
+        LTC: "litecoin",
+        SOL: "solana"
+      };
+
+      // Prepare list of IDs to request
+      const ids = Object.values(coinGeckoIDs).join(',');
+
+      try {
+        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`);
+        if (!res.ok) throw new Error('Failed to fetch prices');
+        const priceData = await res.json();
+
+        // Update coins usd price from API response
+        Object.entries(coinGeckoIDs).forEach(([key, id]) => {
+          if (priceData[id] && priceData[id].usd) {
+            coins[key].usd = priceData[id].usd;
+          }
+        });
+
+        // USD cash is always 1
+        coins.CASH.usd = 1;
+      } catch (err) {
+        console.error(err);
+        alert('Error fetching crypto prices. Using fallback prices.');
+
+        // Fallback static prices if API fails
+        coins.BTC.usd = 30000;
+        coins.ETH.usd = 2000;
+        coins.XRP.usd = 0.5;
+        coins.USDT.usd = 1;
+        coins.DOGE.usd = 0.07;
+        coins.LTC.usd = 100;
+        coins.SOL.usd = 25;
+        coins.CASH.usd = 1;
+      }
+    }
+
+    // Render wallet balances on the page
     function renderWallets() {
       const container = document.getElementById('walletsContainer');
       container.innerHTML = '';
@@ -228,15 +311,17 @@
   </div>
 `;
 
-container.innerHTML += (key === "BTC" || key === "ETH"|| key === "XRP"|| key === "DOGE"|| key === "USDT"|| key === "LTC"|| key === "SOL")
-    ? `<a href="${key.toLowerCase()}.html" style="text-decoration: none; color: inherit;">${walletHTML}</a>`
-    : walletHTML;
+        const isCrypto = ["BTC","ETH","XRP","DOGE","USDT","LTC","SOL"].includes(key);
 
+        container.innerHTML += isCrypto 
+          ? `<a href="${key.toLowerCase()}.html" style="text-decoration:none; color:inherit;">${walletHTML}</a>`
+          : walletHTML;
       });
 
       document.getElementById('totalBalance').textContent = `$${total.toFixed(2)}`;
     }
 
+    // Render transaction history list
     function renderTransactionHistory() {
       const historyList = document.getElementById('transactionHistory');
       historyList.innerHTML = '';
@@ -247,44 +332,53 @@ container.innerHTML += (key === "BTC" || key === "ETH"|| key === "XRP"|| key ===
       });
     }
 
+    // Convert USD Cash to selected crypto
     function convert() {
       const amount = parseFloat(document.getElementById('usdAmount').value);
       const selected = document.getElementById('cryptoSelect').value;
 
-      // Validate the input
+      // Validate input amount
       if (!amount || amount <= 0) {
         alert("Please enter a valid amount greater than 0.");
         return;
       }
 
-      // Check if there is enough USD cash
+      // Check enough USD cash
       if (amount > coins.CASH.amount) {
         alert("Not enough USD Cash to convert.");
         return;
       }
 
-      // Perform the conversion
-      coins.CASH.amount -= amount; // Deduct USD from cash
-      const cryptoAmount = amount / coins[selected].usd; // Convert to selected cryptocurrency
-      coins[selected].amount += cryptoAmount; // Add to the selected crypto
+      if (coins[selected].usd === 0) {
+        alert("Selected crypto price unavailable. Try again later.");
+        return;
+      }
 
-      // Record the transaction
+      // Deduct USD cash and add crypto amount
+      coins.CASH.amount -= amount;
+      const cryptoAmount = amount / coins[selected].usd;
+      coins[selected].amount += cryptoAmount;
+
+      // Record transaction with timestamp
       const timestamp = new Date().toLocaleString();
       transactionHistory.push({
-        timestamp,
         usdAmount: amount,
+        cryptoAmount,
         crypto: selected,
-        cryptoAmount
+        timestamp
       });
 
-      // Render updated data
+      // Update UI
       renderWallets();
       renderTransactionHistory();
+
+      // Reset input field
+      document.getElementById('usdAmount').value = '';
+      alert(`Successfully converted $${amount.toFixed(2)} to ${cryptoAmount.toFixed(4)} ${selected}!`);
     }
 
-    // Initial render
-    renderWallets();
-    renderTransactionHistory();
+    // Initialize the page by loading wallet balances
+    loadWalletBalances();
   </script>
 </body>
 </html>

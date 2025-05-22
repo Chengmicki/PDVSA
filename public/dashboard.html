@@ -260,12 +260,11 @@
         window.location.href = 'login.html';  // Redirect to login if no token is found
       } else {
         // Token exists, fetch protected dashboard data
-        fetch('/dashboard', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`  // Send the token in the Authorization header
-          }
-        })
+       fetch('/api/auth/me', { 
+  method: 'GET', 
+  headers: { 'Authorization': `Bearer ${token}` } 
+})
+
         .then(response => response.json())
         .then(data => {
           if (data.email) {
@@ -298,7 +297,7 @@
         <li><a href="support.html">Support</a></li>
         <li><a href="withdraw.html">Withdraw</a></li>
         <li><a href="investments.html">Investments</a></li>
-        <li><a href="homepage.html">Logout</a></li>
+        <li><a href="index.html">Logout</a></li>
       </ul>
     </nav>
   </header>
@@ -410,8 +409,6 @@
     }
 
     window.onload = function () {
-      animateValue("current-balance", 0, 40206.20, 1500, val =>
-        `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
       animateValue("total-aum", 0, 778, 1500, val =>
         `$${Math.round(val)}M`);
       animateValue("active-investors", 0, 15300, 1500, val =>
@@ -425,5 +422,62 @@
       nav.classList.toggle('active');
     }
   </script>
+  <script>
+  let livePrices = {};
+
+  // 1️⃣ Get USD prices for all coins (CASH is $1)
+  async function fetchLivePrices() {
+    try {
+      const res = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,ripple,tether,dogecoin,litecoin,solana&vs_currencies=usd'
+      );
+      const data = await res.json();
+      livePrices = {
+        BTC: data.bitcoin.usd,
+        ETH: data.ethereum.usd,
+        XRP: data.ripple.usd,
+        USDT: data.tether.usd,
+        DOGE: data.dogecoin.usd,
+        LTC: data.litecoin.usd,
+        SOL: data.solana.usd,
+        CASH: 1
+      };
+    } catch (err) {
+      console.error('Failed to load prices:', err);
+      // optionally provide fallbacks here
+    }
+  }
+
+  // 2️⃣ Fetch your wallet, compute total USD, render it
+  async function fetchTotalBalance() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const res = await fetch('/api/wallet/me', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('wallet fetch failed');
+      const balances = await res.json(); 
+      let total = 0;
+      Object.entries(balances).forEach(([coin, amt]) => {
+        const price = livePrices[coin] ?? 0;
+        total += parseFloat(amt) * price;
+      });
+      document.getElementById('current-balance').textContent =
+        `$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+    } catch (err) {
+      console.error('Error fetching total balance:', err);
+    }
+  }
+
+  // 3️⃣ On page‐load, once authenticated & after greeting:
+  window.addEventListener('DOMContentLoaded', async () => {
+    // your existing token‐check & welcome logic...
+    await fetchLivePrices();
+    fetchTotalBalance();
+  });
+</script>
+
 </body>
 </html>

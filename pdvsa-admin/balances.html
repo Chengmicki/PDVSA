@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>All Balances</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+    }
+    h2 { margin-bottom: 10px; }
+    input[type="text"] {
+      padding: 8px; margin-bottom: 15px; width: 250px;
+      font-size: 14px; border: 1px solid #ccc; border-radius: 4px;
+    }
+    table {
+      width: 100%; border-collapse: collapse; background: white;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 10px; text-align: center; border: 1px solid #ddd;
+    }
+    th { background-color: #f9f9f9; font-weight: bold; }
+    input[type="number"] {
+      width: 80px; padding: 5px; font-size: 13px;
+      border: 1px solid #ccc; border-radius: 4px;
+    }
+    .gear-icon {
+      margin-left: 5px; font-size: 16px; cursor: pointer;
+    }
+    tr:hover { background-color: #f1f1f1; }
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr { display: block; }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>All Wallet Balances</h2>
+  <input type="text" id="search" placeholder="Search by email" onkeyup="filterTable()" />
+
+  <table id="balancesTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th>BTC</th>
+        <th>ETH</th>
+        <th>USDT</th>
+        <th>DOGE</th>
+        <th>LTC</th>
+        <th>XRP</th>
+        <th>SOL</th>
+        <th>CASH</th>                <!-- NEW COLUMN -->
+        <th>Total (USD)</th>
+        <th>Registered</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+
+  <script>
+    let livePrices = {};
+
+    async function fetchLivePrices() {
+      try {
+        const res = await fetch(
+          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,tether,dogecoin,litecoin,ripple,solana&vs_currencies=usd'
+        );
+        const data = await res.json();
+        livePrices = {
+          BTC:  data.bitcoin.usd,
+          ETH:  data.ethereum.usd,
+          USDT: data.tether.usd,
+          DOGE: data.dogecoin.usd,
+          LTC:  data.litecoin.usd,
+          XRP:  data.ripple.usd,
+          SOL:  data.solana.usd,
+          CASH: 1                     // USD-cash always $1
+        };
+      } catch (err) {
+        console.error('Failed to fetch live prices:', err);
+      }
+    }
+
+    async function fetchBalances() {
+      await fetchLivePrices();
+
+      try {
+        const res  = await fetch('/api/admin/users');
+        const data = await res.json();
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        data.forEach(user => {
+          const balances = Object.assign({
+            BTC:0, ETH:0, USDT:0, DOGE:0, LTC:0, XRP:0, SOL:0, CASH:0
+          }, user.balances);
+
+          let totalUSD = 0;
+          Object.entries(balances).forEach(([coin, amt]) => {
+            totalUSD += (parseFloat(amt) || 0) * (livePrices[coin] || 0);
+          });
+
+          const formatInput = (val,u,c)=>`
+            <input type="number" value="${parseFloat(val).toFixed(4)}"
+                   step="0.0001" data-user="${u}" data-coin="${c}" />
+            <span class="gear-icon" title="Update">⚙️</span>
+          `;
+
+          const created = user.createdAt
+            ? new Date(user.createdAt).toLocaleDateString()
+            : 'N/A';
+
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${user._id}</td>
+            <td>${user.email}</td>
+            <td>${formatInput(balances.BTC,  user._id,'BTC')}</td>
+            <td>${formatInput(balances.ETH,  user._id,'ETH')}</td>
+            <td>${formatInput(balances.USDT, user._id,'USDT')}</td>
+            <td>${formatInput(balances.DOGE, user._id,'DOGE')}</td>
+            <td>${formatInput(balances.LTC,  user._id,'LTC')}</td>
+            <td>${formatInput(balances.XRP,  user._id,'XRP')}</td>
+            <td>${formatInput(balances.SOL,  user._id,'SOL')}</td>
+            <td>${formatInput(balances.CASH,user._id,'CASH')}</td>
+            <td>$${totalUSD.toFixed(2)}</td>
+            <td>${created}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (err) {
+        console.error('Error loading balances:', err);
+      }
+    }
+
+    function filterTable() {
+      const q = document.getElementById('search').value.toLowerCase();
+      document.querySelectorAll('#balancesTable tbody tr')
+        .forEach(r => {
+          const email = r.cells[1].textContent.toLowerCase();
+          r.style.display = email.includes(q) ? '' : 'none';
+        });
+    }
+
+    async function updateBalance(icon) {
+      const inp = icon.previousElementSibling;
+      const userId = inp.dataset.user;
+      const coin   = inp.dataset.coin;
+      const newVal = parseFloat(inp.value);
+
+      if (isNaN(newVal)) return alert('Invalid number');
+
+      const res = await fetch('/api/admin/update-balance', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ userId, coin, newValue: newVal })
+      });
+      const body = await res.json();
+      if (!res.ok) return alert('Error: '+body.message);
+      alert('Updated!');
+      fetchBalances();
+    }
+
+    document.addEventListener('click', e => {
+      if (e.target.classList.contains('gear-icon')) {
+        updateBalance(e.target);
+      }
+    });
+
+    // initial load
+    fetchBalances();
+  </script>
+
+</body>
+</html>

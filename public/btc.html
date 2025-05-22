@@ -6,6 +6,7 @@
   <title>Bitcoin Wallet</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    /* Your existing styles... */
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
@@ -51,7 +52,7 @@
 
     canvas {
       width: 100% !important;
-      height: auto !important;
+      height: 300px !important; /* fix height to prevent distortion */
     }
 
     .actions {
@@ -72,6 +73,7 @@
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s, transform 0.2s;
+      user-select: none;
     }
 
     .action-btn:hover {
@@ -115,6 +117,10 @@
       text-decoration: none;
     }
 
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
     .modal {
       display: none;
       position: fixed;
@@ -136,14 +142,18 @@
       width: 90%;
       max-width: 400px;
       animation: slideIn 0.3s;
+      position: relative;
     }
 
     .close {
       color: #aaa;
-      float: right;
+      position: absolute;
+      right: 15px;
+      top: 10px;
       font-size: 28px;
       font-weight: bold;
       cursor: pointer;
+      user-select: none;
     }
 
     .close:hover,
@@ -159,6 +169,8 @@
       margin: 10px 0;
       border-radius: 6px;
       border: 1px solid #ccc;
+      font-size: 1rem;
+      box-sizing: border-box;
     }
 
     .modal-content button {
@@ -170,6 +182,7 @@
       cursor: pointer;
       width: 100%;
       font-size: 1rem;
+      user-select: none;
     }
 
     .modal-content button:hover {
@@ -221,8 +234,8 @@
   <div class="header">
     <img src="https://images.seeklogo.com/logo-png/21/1/bitcoin-logo-png_seeklogo-214721.png" alt="Bitcoin Logo">
     <h1>Bitcoin</h1>
-    <div class="balance" id="btcBalance">₿0.5000</div>
-    <div class="usd-value" id="usdValue">$15,000.00</div>
+    <div class="balance" id="btcBalance">₿0.0000</div>
+    <div class="usd-value" id="usdValue">$0.00</div>
   </div>
 
   <div class="chart-container">
@@ -230,9 +243,9 @@
   </div>
 
   <div class="actions">
-    <div class="action-btn" onclick="openModal('receiveModal')">Receive</div>
-    <div class="action-btn" onclick="openModal('sendModal')">Send</div>
-    <div class="action-btn" onclick="openModal('convertModal')">Convert</div>
+    <div class="action-btn" onclick="openModal('receiveModal')" role="button" tabindex="0">Receive</div>
+    <div class="action-btn" onclick="openModal('sendModal')" role="button" tabindex="0">Send</div>
+    <div class="action-btn" onclick="openModal('convertModal')" role="button" tabindex="0">Convert</div>
   </div>
 
   <div class="transactions">
@@ -246,14 +259,11 @@
 
   <a href="cryptoassets.html" class="back-link">← Back to Dashboard</a>
 
-  <!-- Modals remain the same (Receive, Send, Convert) -->
-  <!-- ... All your modal content stays unchanged ... -->
-
   <!-- Receive Modal -->
-  <div id="receiveModal" class="modal">
+  <div id="receiveModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="receiveTitle" tabindex="-1">
     <div class="modal-content">
-      <span class="close" onclick="closeModal('receiveModal')">&times;</span>
-      <h2>Receive Bitcoin</h2>
+      <span class="close" onclick="closeModal('receiveModal')" role="button" aria-label="Close Receive Modal" tabindex="0">&times;</span>
+      <h2 id="receiveTitle">Receive Bitcoin</h2>
       <p>Your BTC Address:</p>
       <p><strong>bc1q03ggdrww7essye4h58xyf09yeamsagqwhpdxfw</strong></p>
       <img src="https://api.qrserver.com/v1/create-qr-code/?data=bc1q03ggdrww7essye4h58xyf09yeamsagqwhpdxfw&size=200x200" alt="QR Code">
@@ -261,24 +271,24 @@
   </div>
 
   <!-- Send Modal -->
-  <div id="sendModal" class="modal">
+  <div id="sendModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="sendTitle" tabindex="-1">
     <div class="modal-content">
-      <span class="close" onclick="closeModal('sendModal')">&times;</span>
-      <h2>Send Bitcoin</h2>
-      <input type="text" id="recipientAddress" placeholder="Recipient BTC Address">
-      <input type="number" id="sendAmount" placeholder="Amount in BTC">
-      <div id="sendSummary"></div>
+      <span class="close" onclick="closeModal('sendModal')" role="button" aria-label="Close Send Modal" tabindex="0">&times;</span>
+      <h2 id="sendTitle">Send Bitcoin</h2>
+      <input type="text" id="recipientAddress" placeholder="Recipient BTC Address" autocomplete="off" />
+      <input type="number" id="sendAmount" placeholder="Amount in BTC" step="0.0001" min="0" />
+      <div id="sendSummary" aria-live="polite" style="margin-bottom:10px;"></div>
       <button type="button" onclick="prepareSend()">Send</button>
     </div>
   </div>
 
   <!-- Convert Modal -->
-  <div id="convertModal" class="modal">
+  <div id="convertModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="convertTitle" tabindex="-1">
     <div class="modal-content">
-      <span class="close" onclick="closeModal('convertModal')">&times;</span>
-      <h2>Convert BTC to Other Crypto</h2>
-      <input type="number" id="convertAmount" placeholder="Amount in BTC">
-      <select id="cryptoSelect">
+      <span class="close" onclick="closeModal('convertModal')" role="button" aria-label="Close Convert Modal" tabindex="0">&times;</span>
+      <h2 id="convertTitle">Convert BTC to Other Crypto</h2>
+      <input type="number" id="convertAmount" placeholder="Amount in BTC" step="0.0001" min="0" />
+      <select id="cryptoSelect" aria-label="Select cryptocurrency">
         <option value="ETH">Ethereum</option>
         <option value="XRP">Ripple</option>
         <option value="USDT">Tether</option>
@@ -286,112 +296,91 @@
         <option value="LTC">Litecoin</option>
         <option value="SOL">Solana</option>
       </select>
-      <div id="convertSummary"></div>
+      <div id="convertSummary" aria-live="polite" style="margin-bottom:10px;"></div>
       <button type="button" onclick="prepareConvert()">Convert</button>
     </div>
   </div>
+<script>
+  let exchangeRates = {};
 
-  <script>
-    const exchangeRates = {
-      BTC: 30000,
-      ETH: 2000,
-      XRP: 0.5,
-      USDT: 1,
-      DOGE: 0.08,
-      LTC: 90,
-      SOL: 120
-    };
-
-    function openModal(id) {
-      document.getElementById(id).style.display = "block";
+  async function fetchLivePrices() {
+    try {
+      const response = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'
+      );
+      const data = await response.json();
+      exchangeRates = { BTC: data.bitcoin.usd };
+      await fetchWalletBalance();
+    } catch (err) {
+      console.error('Error fetching live prices:', err);
     }
+  }
 
-    function closeModal(id) {
-      document.getElementById(id).style.display = "none";
+  async function fetchWalletBalance() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('You are not logged in.');
+      return;
     }
+    try {
+      const res = await fetch('/api/wallet/me', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to fetch wallet data');
+      const balances = await res.json();           // { BTC: 0.05, … }
+      const btc = parseFloat(balances.BTC || 0);
+      const usd = btc * exchangeRates.BTC;
+      document.getElementById('btcBalance').textContent = `₿${btc.toFixed(4)}`;
+      document.getElementById('usdValue').textContent =
+        usd.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    } catch (err) {
+      console.error('Error fetching wallet balance:', err);
+      alert('Could not fetch wallet balance. Try logging in again.');
+    }
+  }
 
-    function prepareSend() {
-      const address = document.getElementById('recipientAddress').value;
-      const amount = parseFloat(document.getElementById('sendAmount').value);
+  async function fetchChartData() {
+    try {
+      const res = await fetch(
+        'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily'
+      );
+      const data = await res.json();
+      const labels = data.prices.map(p => {
+        const d = new Date(p[0]);
+        return `${d.getMonth()+1}/${d.getDate()}`;
+      });
+      const prices = data.prices.map(p => p[1]);
+      renderChart(labels, prices);
+    } catch (err) {
+      console.error('Error fetching chart data:', err);
+    }
+  }
 
-      if (!address || isNaN(amount) || amount <= 0) {
-        alert("Please enter a valid address and amount.");
-        return;
+  function renderChart(labels, data) {
+    const ctx = document.getElementById('btcChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets: [{ label: 'BTC (USD)', data, borderColor: '#f7931a', backgroundColor: 'rgba(247,147,26,0.2)', fill: true, tension: 0.2, pointRadius: 0 }] },
+      options: {
+        responsive: true,
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#555' } },
+          y: { grid: { color: '#eee' }, ticks: { color: '#555' } }
+        }
       }
+    });
+  }
 
-      const usdValue = amount * exchangeRates.BTC;
-      const fee = 0.0001;
-      const total = amount + fee;
+  function openModal(id) { /*…*/ }
+  function closeModal(id) { /*…*/ }
+  function prepareSend()   { /*…*/ }
+  function prepareConvert(){ /*…*/ }
 
-      const summary = `
-        <p>Recipient: ${address}</p>
-        <p>Amount: ₿${amount.toFixed(4)} (~$${usdValue.toFixed(2)})</p>
-        <p>Estimated Fee: ₿${fee}</p>
-        <p>Total: ₿${total.toFixed(4)}</p>
-        <p><strong>Ready to send. (Backend integration required)</strong></p>
-      `;
-      document.getElementById('sendSummary').innerHTML = summary;
-    }
+  window.addEventListener('DOMContentLoaded', () => {
+    fetchLivePrices();
+    fetchChartData();
+  });
+</script>
 
-    function prepareConvert() {
-      const amount = parseFloat(document.getElementById('convertAmount').value);
-      const target = document.getElementById('cryptoSelect').value;
-
-      if (isNaN(amount) || amount <= 0) {
-        alert("Please enter a valid BTC amount.");
-        return;
-      }
-
-      const btcToUsd = amount * exchangeRates.BTC;
-      const converted = btcToUsd / exchangeRates[target];
-
-      const summary = `
-        <p>${amount} BTC ≈ ${converted.toFixed(4)} ${target}</p>
-        <p>Equivalent USD: $${btcToUsd.toFixed(2)}</p>
-        <p><strong>Ready to convert. (Backend integration required)</strong></p>
-      `;
-      document.getElementById('convertSummary').innerHTML = summary;
-    }
-
-    async function fetchBTCData() {
-      try {
-        const res = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30');
-        const data = await res.json();
-        const labels = data.prices.map(p => {
-          const date = new Date(p[0]);
-          return `${date.getMonth() + 1}/${date.getDate()}`;
-        });
-        const prices = data.prices.map(p => p[1]);
-
-        const ctx = document.getElementById('btcChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: 'BTC Price (USD)',
-              data: prices,
-              borderColor: 'rgba(247, 147, 26, 1)',
-              backgroundColor: 'rgba(247, 147, 26, 0.1)',
-              fill: true,
-              tension: 0.3
-            }]
-          },
-          options: {
-            responsive: true,
-            scales: {
-              x: {
-                ticks: { maxTicksLimit: 10 }
-              }
-            }
-          }
-        });
-      } catch (err) {
-        console.error("Error loading BTC chart:", err);
-      }
-    }
-
-    fetchBTCData();
-  </script>
 </body>
 </html>

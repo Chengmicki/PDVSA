@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>All Customers</title>
+  <style>
+    /* ... (same styling as before) ... */
+    .navbar {
+      background-color: #2c3e50;
+      padding: 12px 24px;
+      text-align: center;
+      margin-bottom: 30px;
+      border-radius: 10px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+      transition: color 0.3s ease;
+    }
+
+    .navbar a:hover {
+      color: #f39c12;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 40px;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #2c3e50;
+    }
+
+    #backBtnContainer {
+      margin-bottom: 25px;
+      text-align: left;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #backBtn {
+      background-color: #f39c12;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-size: 14px;
+    }
+
+    #backBtn:hover {
+      background-color: #d97e0b;
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto 50px auto;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 16px;
+    }
+
+    thead {
+      background-color: #f7f9fc;
+    }
+
+    th, td {
+      padding: 14px 18px;
+      text-align: left;
+      border-bottom: 1px solid #eaeaea;
+    }
+
+    th {
+      color: #555;
+      font-weight: 600;
+    }
+
+    tbody tr:hover {
+      background-color: #f1f6fb;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        flex-wrap: wrap;
+      }
+
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead tr {
+        display: none;
+      }
+
+      tbody tr {
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 15px;
+      }
+
+      tbody tr td {
+        padding-left: 50%;
+        position: relative;
+      }
+
+      tbody tr td::before {
+        position: absolute;
+        top: 14px;
+        left: 15px;
+        width: 45%;
+        white-space: nowrap;
+        font-weight: 600;
+        color: #555;
+      }
+
+      tbody tr td:nth-of-type(1)::before { content: "ID"; }
+      tbody tr td:nth-of-type(2)::before { content: "Full Name"; }
+      tbody tr td:nth-of-type(3)::before { content: "Email"; }
+      tbody tr td:nth-of-type(4)::before { content: "Balance"; }
+      tbody tr td:nth-of-type(5)::before { content: "Status"; }
+      tbody tr td:nth-of-type(6)::before { content: "Action"; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="backBtnContainer">
+    <button id="backBtn" onclick="history.back()">← Back</button>
+  </div>
+
+  <nav class="navbar">
+    <a href="/admin/pending-kyc.html">Pending KYC</a>
+    <a href="/admin/approved.html">Approved KYC</a>
+    <a href="/admin/kyc-logs.html">All Logs</a>
+  </nav>
+
+  <h1>All Customers</h1>
+  <div style="text-align: center; margin-bottom: 20px;">
+    <input type="text" id="searchInput" placeholder="Search by email" oninput="filterAndPaginate()" 
+         style="padding: 10px; width: 300px; max-width: 90%; border: 1px solid #ccc; border-radius: 8px;" />
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Balance</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- Filled by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <div id="pagination" style="text-align: center; margin-top: 20px;"></div>
+
+  <script>
+    let allUsers = [];
+    let currentPage = 1;
+    const entriesPerPage = 5;
+
+    async function fetchAllUsers() {
+      try {
+        const res = await fetch('/api/admin/users');
+        allUsers = await res.json();
+        filterAndPaginate();
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        alert('Failed to load users');
+      }
+    }
+
+    function filterAndPaginate() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+
+      const filtered = allUsers.filter(user => {
+        const email = user.email?.toLowerCase() || '';
+        return email.includes(query);
+      });
+
+      const start = (currentPage - 1) * entriesPerPage;
+      const end = start + entriesPerPage;
+      const paginated = filtered.slice(start, end);
+
+      renderTable(paginated);
+      renderPagination(filtered.length);
+    }
+
+    function renderTable(users) {
+      const tableBody = document.getElementById('tableBody');
+      tableBody.innerHTML = '';
+
+      users.forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${user._id}</td>
+          <td>N/A</td>
+          <td>${user.email}</td>
+          <td>$${Number(user.balance || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+          <td>🟢 Registered</td>
+          <td>-</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function renderPagination(totalItems) {
+      const pageCount = Math.ceil(totalItems / entriesPerPage);
+      const pagination = document.getElementById('pagination');
+      pagination.innerHTML = '';
+
+      for (let i = 1; i <= pageCount; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.style = `margin: 0 5px; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; background-color: ${i === currentPage ? '#3498db' : '#ddd'}; color: ${i === currentPage ? '#fff' : '#000'};`;
+        btn.onclick = () => {
+          currentPage = i;
+          filterAndPaginate();
+        };
+        pagination.appendChild(btn);
+      }
+    }
+
+    fetchAllUsers();
+  </script>
+
+  <script>
+  async function loadDogecoinWallet() {
+    try {
+      const response = await fetch('/api/wallets/dogecoin', {
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token') // if using JWT
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch balance');
+      }
+
+      const data = await response.json();
+      const doge = data.balance.toFixed(2);
+      const usd = data.usdValue.toFixed(2);
+
+      document.getElementById('dogeBalance').innerText = `DOGE ${doge}`;
+      document.getElementById('usdValue').innerText = `$${usd}`;
+    } catch (error) {
+      console.error('Error loading Dogecoin wallet:', error);
+    }
+  }
+
+  // Call it when page loads
+  window.onload = loadDogecoinWallet;
+</script>
+
+
+</body>
+</html>

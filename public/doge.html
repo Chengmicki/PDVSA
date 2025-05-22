@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dogecoin Wallet</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -12,58 +13,51 @@
       background-color: #f5f5f5;
       color: #1a1a1a;
     }
-
     .header {
       background: linear-gradient(135deg, #c2a633, #f2d45c);
       padding: 30px;
       text-align: center;
       color: white;
     }
-
     .header img {
       width: 50px;
       margin-bottom: 10px;
     }
-
     .header h1 {
       font-size: 1.5rem;
       margin: 5px 0;
     }
-
     .balance {
       font-size: 2rem;
       font-weight: bold;
     }
-
     .usd-value {
       font-size: 1rem;
       margin-top: 5px;
     }
-
     .actions {
       display: flex;
       justify-content: space-around;
       margin: 20px;
+      flex-wrap: wrap;
     }
-
     .action-btn {
       background-color: white;
       border-radius: 12px;
       padding: 15px 25px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       text-align: center;
-      flex: 1;
-      margin: 0 5px;
+      flex: 1 1 30%;
+      margin: 5px;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s, transform 0.2s;
+      user-select: none;
     }
-
     .action-btn:hover {
       background-color: #fff7d1;
       transform: scale(1.05);
     }
-
     .transactions {
       margin: 20px;
       background-color: white;
@@ -71,26 +65,21 @@
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     }
-
     .transactions h2 {
       margin-bottom: 15px;
     }
-
     .transactions ul {
       list-style: none;
       padding: 0;
     }
-
     .transactions li {
       padding: 10px 0;
       border-bottom: 1px solid #ddd;
       font-size: 0.95rem;
     }
-
     .transactions li:last-child {
       border-bottom: none;
     }
-
     .back-link {
       display: block;
       text-align: center;
@@ -99,7 +88,9 @@
       color: #c2a633;
       text-decoration: none;
     }
-
+    .back-link:hover {
+      text-decoration: underline;
+    }
     .modal {
       display: none;
       position: fixed;
@@ -109,10 +100,9 @@
       width: 100%;
       height: 100%;
       overflow: auto;
-      background-color: rgba(0, 0, 0, 0.5);
+      background-color: rgba(0,0,0,0.5);
       animation: fadeIn 0.3s;
     }
-
     .modal-content {
       background-color: #fff;
       margin: 10% auto;
@@ -122,7 +112,6 @@
       max-width: 400px;
       animation: slideIn 0.3s;
     }
-
     .close {
       color: #aaa;
       float: right;
@@ -130,13 +119,11 @@
       font-weight: bold;
       cursor: pointer;
     }
-
     .close:hover,
     .close:focus {
       color: black;
       text-decoration: none;
     }
-
     .modal-content input,
     .modal-content select {
       width: 100%;
@@ -145,7 +132,6 @@
       border-radius: 6px;
       border: 1px solid #ccc;
     }
-
     .modal-content button {
       background-color: #c2a633;
       color: white;
@@ -156,19 +142,20 @@
       width: 100%;
       font-size: 1rem;
     }
-
     .modal-content button:hover {
       background-color: #b0952d;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-
     @keyframes slideIn {
       from { transform: translateY(-50px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
+    }
+    @media (max-width: 600px) {
+      .actions { flex-direction: column; }
+      .action-btn { margin:10px 0; }
     }
   </style>
 </head>
@@ -177,8 +164,8 @@
   <div class="header">
     <img src="https://images.seeklogo.com/logo-png/31/1/dogecoin-doge-logo-png_seeklogo-319943.png" alt="Dogecoin Logo">
     <h1>Dogecoin (DOGE)</h1>
-    <div class="balance" id="dogeBalance">DOGE 10,000.00</div>
-    <div class="usd-value" id="usdValue">$800.00</div>
+    <div class="balance" id="dogeBalance">Ð0.0000</div>
+    <div class="usd-value" id="usdValue">$0.00</div>
   </div>
 
   <div class="actions">
@@ -190,9 +177,7 @@
   <div class="transactions">
     <h2>Recent Transactions</h2>
     <ul id="transactionList">
-      <li>+DOGE 2,000 received from address DHg1... • $160</li>
-      <li>−DOGE 1,000 sent to address DKc3... • $80</li>
-      <li>+DOGE 3,500 received from address D7sP... • $280</li>
+      <!-- You can dynamically inject recent transactions here if you have an endpoint -->
     </ul>
   </div>
 
@@ -206,7 +191,7 @@
       <p>Your DOGE Address:</p>
       <p id="dogeAddress"><strong>DFKrCHR6fC5QcZeFywgPnh1pt2pNjvKnD8</strong></p>
       <img src="https://api.qrserver.com/v1/create-qr-code/?data=DFKrCHR6fC5QcZeFywgPnh1pt2pNjvKnD8&size=200x200" alt="QR Code">
-      <button type="button" onclick="copyAddress('dogeAddress')">Copy Address</button>
+      <button onclick="copyAddress('dogeAddress')">Copy Address</button>
     </div>
   </div>
 
@@ -215,10 +200,10 @@
     <div class="modal-content">
       <span class="close" onclick="closeModal('sendModal')">×</span>
       <h2>Send Dogecoin</h2>
-      <input type="text" id="recipientAddress" placeholder="Recipient DOGE Address">
-      <input type="number" id="sendAmount" placeholder="Amount in DOGE">
-      <div id="sendSummary"></div>
-      <button type="button" onclick="prepareSend()">Send</button>
+      <input type="text" id="recipientAddress" placeholder="Recipient DOGE Address" />
+      <input type="number" id="sendAmount" placeholder="Amount in DOGE" step="0.0001" min="0" />
+      <div id="sendSummary" style="margin-bottom:10px;"></div>
+      <button onclick="prepareSend()">Send</button>
     </div>
   </div>
 
@@ -227,91 +212,103 @@
     <div class="modal-content">
       <span class="close" onclick="closeModal('convertModal')">×</span>
       <h2>Convert DOGE to Other Crypto</h2>
-      <input type="number" id="convertAmount" placeholder="Amount in DOGE">
+      <input type="number" id="convertAmount" placeholder="Amount in DOGE" step="0.0001" min="0"/>
       <select id="cryptoSelect">
-        <option value="ETH">Ethereum</option>
         <option value="BTC">Bitcoin</option>
+        <option value="ETH">Ethereum</option>
         <option value="USDT">Tether</option>
         <option value="XRP">Ripple</option>
         <option value="LTC">Litecoin</option>
         <option value="SOL">Solana</option>
       </select>
-      <div id="convertSummary"></div>
-      <button type="button" onclick="prepareConvert()">Convert</button>
+      <div id="convertSummary" style="margin-bottom:10px;"></div>
+      <button onclick="prepareConvert()">Convert</button>
     </div>
   </div>
 
   <script>
-    const exchangeRates = {
-      DOGE: 0.08,
-      ETH: 3000,
-      BTC: 30000,
-      USDT: 1,
-      XRP: 0.5,
-      LTC: 90,
-      SOL: 120
-    };
+    let exchangeRates = {};
 
-    function openModal(id) {
-      document.getElementById(id).style.display = "block";
+    // Fetch live prices for all coins (including DOGE)
+    async function fetchLivePrices() {
+      try {
+        const res = await fetch(
+          'https://api.coingecko.com/api/v3/simple/price?ids=dogecoin,bitcoin,ethereum,ripple,tether,litecoin,solana&vs_currencies=usd'
+        );
+        const data = await res.json();
+        exchangeRates = {
+          DOGE: data.dogecoin.usd,
+          BTC: data.bitcoin.usd,
+          ETH: data.ethereum.usd,
+          XRP: data.ripple.usd,
+          USDT: data.tether.usd,
+          LTC: data.litecoin.usd,
+          SOL: data.solana.usd
+        };
+        fetchWalletBalance();
+      } catch (err) {
+        console.error('Live price fetch failed', err);
+      }
     }
 
-    function closeModal(id) {
-      document.getElementById(id).style.display = "none";
+    // Fetch your backend balance and update UI
+    async function fetchWalletBalance() {
+      const token = localStorage.getItem('token');
+      if (!token) return alert('Please log in.');
+
+      try {
+        const res = await fetch('/api/wallet/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('wallet fetch failed');
+        const balances = await res.json();
+        const doge = parseFloat(balances.DOGE || 0);
+        const usd  = doge * (exchangeRates.DOGE || 0);
+
+        document.getElementById('dogeBalance').innerText = `Ð${doge.toFixed(4)}`;
+        document.getElementById('usdValue').innerText       = `$${usd.toFixed(2)}`;
+      } catch (err) {
+        console.error(err);
+        alert('Could not fetch wallet balance. Try logging in again.');
+      }
     }
 
+    // Modal helpers
+    function openModal(id)  { document.getElementById(id).style.display = 'block'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    // Copy receive address
+    function copyAddress(el) {
+      navigator.clipboard.writeText(
+        document.getElementById(el).innerText
+      ).then(_=>alert('Copied!'));
+    }
+
+    // Send (mock) 
     function prepareSend() {
-      const address = document.getElementById('recipientAddress').value;
-      const amount = parseFloat(document.getElementById('sendAmount').value);
-
-      if (!address || isNaN(amount) || amount <= 0) {
-        alert("Please enter a valid address and amount.");
-        return;
-      }
-
-      const usdValue = amount * exchangeRates.DOGE;
-      const fee = 1;
-      const total = amount + fee;
-
-      const summary = `
-        <p>Recipient: ${address}</p>
-        <p>Amount: DOGE ${amount.toFixed(2)} (~$${usdValue.toFixed(2)})</p>
-        <p>Estimated Fee: DOGE ${fee.toFixed(2)}</p>
-        <p>Total: DOGE ${total.toFixed(2)}</p>
-        <p><strong>Ready to send. (Backend integration required)</strong></p>
-      `;
-      document.getElementById('sendSummary').innerHTML = summary;
+      const addr = document.getElementById('recipientAddress').value.trim();
+      const amt  = parseFloat(document.getElementById('sendAmount').value);
+      if (!addr || isNaN(amt)||amt<=0) return alert('Invalid');
+      const usd = (exchangeRates.DOGE||0)*amt;
+      document.getElementById('sendSummary').innerHTML =
+        `You are about to send Ð${amt.toFixed(4)} (~$${usd.toFixed(2)}) to ${addr}.`;
+      if (confirm('Confirm send?')) { alert('Sent! (demo)'); closeModal('sendModal'); }
     }
 
+    // Convert (mock)
     function prepareConvert() {
-      const amount = parseFloat(document.getElementById('convertAmount').value);
-      const target = document.getElementById('cryptoSelect').value;
-
-      if (isNaN(amount) || amount <= 0) {
-        alert("Please enter a valid DOGE amount.");
-        return;
-      }
-
-      const dogeToUsd = amount * exchangeRates.DOGE;
-      const converted = dogeToUsd / exchangeRates[target];
-
-      const summary = `
-        <p>${amount} DOGE ≈ ${converted.toFixed(4)} ${target}</p>
-        <p>Equivalent USD: $${dogeToUsd.toFixed(2)}</p>
-        <p><strong>Ready to convert. (Backend integration required)</strong></p>
-      `;
-      document.getElementById('convertSummary').innerHTML = summary;
+      const amt = parseFloat(document.getElementById('convertAmount').value);
+      const tgt = document.getElementById('cryptoSelect').value;
+      if (isNaN(amt)||amt<=0) return alert('Invalid');
+      const usd = amt * (exchangeRates.DOGE||0);
+      const got = usd / (exchangeRates[tgt]||1);
+      document.getElementById('convertSummary').innerHTML =
+        `Ð${amt.toFixed(4)} (~$${usd.toFixed(2)}) → ${got.toFixed(4)} ${tgt}.`;
+      if (confirm('Convert now?')) { alert('Converted! (demo)'); closeModal('convertModal'); }
     }
 
-    function copyAddress(elementId) {
-      const textToCopy = document.getElementById(elementId).innerText;
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        alert('Dogecoin address copied to clipboard!');
-      }).catch((err) => {
-        alert('Failed to copy: ', err);
-      });
-    }
+    // Init
+    fetchLivePrices();
   </script>
-
 </body>
 </html>
